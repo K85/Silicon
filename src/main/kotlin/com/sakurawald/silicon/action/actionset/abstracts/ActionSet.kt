@@ -152,15 +152,15 @@ abstract class ActionSet {
             submitResultText.contains("presentation") -> return SubmitResult.PRESENTATION_ERROR
             submitResultText.contains("runtime") -> return SubmitResult.RUNTIME_ERROR
             submitResultText.contains("time") -> return SubmitResult.TIME_LIMIT_EXCEED
-            submitResultText.contains("memory") ->return SubmitResult.MEMORY_LIMIT_EXCEED
+            submitResultText.contains("memory") -> return SubmitResult.MEMORY_LIMIT_EXCEED
             submitResultText.contains("compile") || submitResultText.contains("compilation error") -> return SubmitResult.COMPILE_ERROR
             submitResultText.contains("wait")
                     || submitResultText.contains("queuing")
                     || submitResultText.contains("compiling")
                     || submitResultText.contains("running")
-                    -> return SubmitResult.WAITING
+            -> return SubmitResult.WAITING
             submitResultText.contains("output") -> return SubmitResult.OUTPUT_LIMIT_EXCEED
-            else ->  return SubmitResult.UNKNOWN
+            else -> return SubmitResult.UNKNOWN
         }
     }
 

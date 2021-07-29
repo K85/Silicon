@@ -1,8 +1,8 @@
 package com.sakurawald.silicon.api
 
 class Sentence(
-   var id: Int, var content: String?, var type: String?, var from: String?,
-   var creator: String?, var createdAt: String?
+    var id: Int, var content: String?, var type: String?, var from: String?,
+    var creator: String?, var createdAt: String?
 ) {
 
     /**

@@ -1,8 +1,6 @@
 package com.sakurawald.silicon.ui.controller
 
 import com.sakurawald.silicon.ui.App
-import com.sakurawald.silicon.ui.controller.AppController
-import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.ContextMenu

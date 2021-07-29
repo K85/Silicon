@@ -25,7 +25,6 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import javafx.stage.WindowEvent
 import java.io.IOException
 
 @Suppress("PrivatePropertyName", "PropertyName", "FunctionName", "UNUSED_PARAMETER")
@@ -46,28 +45,28 @@ class ProblemsController : Controller() {
     var tableview_problems: TableView<Problem?>? = null
 
     @FXML
-     var tablecolumn_status: TableColumn<Problem, String?>? = null
+    var tablecolumn_status: TableColumn<Problem, String?>? = null
 
     @FXML
-     var tablecolumn_id: TableColumn<Problem, String?>? = null
+    var tablecolumn_id: TableColumn<Problem, String?>? = null
 
     @FXML
-     var tablecolumn_title: TableColumn<Problem, String?>? = null
+    var tablecolumn_title: TableColumn<Problem, String?>? = null
 
     @FXML
-     var tablecolumn_ratio_ac_submit: TableColumn<Problem, String?>? = null
+    var tablecolumn_ratio_ac_submit: TableColumn<Problem, String?>? = null
 
     @FXML
-     var tablecolumn_difficulty: TableColumn<Problem, String?>? = null
+    var tablecolumn_difficulty: TableColumn<Problem, String?>? = null
 
     @FXML
-     var tablecolumn_date: TableColumn<Problem, String?>? = null
+    var tablecolumn_date: TableColumn<Problem, String?>? = null
 
     @FXML
-     var textfield_search: TextField? = null
+    var textfield_search: TextField? = null
 
     @FXML
-     var button_search: Button? = null
+    var button_search: Button? = null
 
     @FXML
     fun button_search_onAction(event: ActionEvent?) {
@@ -111,12 +110,14 @@ class ProblemsController : Controller() {
         if (event.clickCount == 2 && event.button == MouseButton.PRIMARY) {
 
             ProblemDetailController.showProblemDetailWindow(tableview_problems!!.selectionModel.selectedItem!!)
-            App.appInstance.controller!!.textfield_problemID!!.text = tableview_problems!!.selectionModel.selectedItem!!.problemID
+            App.appInstance.controller!!.textfield_problemID!!.text =
+                tableview_problems!!.selectionModel.selectedItem!!.problemID
         }
 
         // Middle Click -> Set ProblemID.
         if (event.button == MouseButton.MIDDLE) {
-            App.appInstance.controller!!.textfield_problemID!!.text = tableview_problems!!.selectionModel.selectedItem!!.problemID
+            App.appInstance.controller!!.textfield_problemID!!.text =
+                tableview_problems!!.selectionModel.selectedItem!!.problemID
         }
 
         // Double Right Click -> Query Submit History.

@@ -26,7 +26,6 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import javafx.stage.WindowEvent
 import java.io.IOException
 
 @Suppress("PrivatePropertyName", "FunctionName", "MemberVisibilityCanBePrivate", "PropertyName")
@@ -38,46 +37,46 @@ class StatusController : Controller() {
     var currentQueryUserID: String? = null
 
     @FXML
-     var textfield_page: TextField? = null
+    var textfield_page: TextField? = null
 
     @FXML
-     var button_go: Button? = null
+    var button_go: Button? = null
 
     @FXML
-     var button_prev_page: Button? = null
+    var button_prev_page: Button? = null
 
     @FXML
-     var button_next_page: Button? = null
+    var button_next_page: Button? = null
 
     @FXML
-     var tableview_submit_results: TableView<SubmitResponse?>? = null
+    var tableview_submit_results: TableView<SubmitResponse?>? = null
 
     @FXML
-     var tablecolumn_run_id: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_run_id: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_user: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_user: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_problem: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_problem: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_result: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_result: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_memory: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_memory: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_time: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_time: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_language: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_language: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_code_length: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_code_length: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-     var tablecolumn_submit_time: TableColumn<SubmitResponse, String?>? = null
+    var tablecolumn_submit_time: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
     fun button_go_onAction() {

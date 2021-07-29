@@ -20,43 +20,43 @@ class SettingsController : Controller() {
     var textfield_mainaccount_user: TextField? = null
 
     @FXML
-     var titledpane_account_clone: TitledPane? = null
+    var titledpane_account_clone: TitledPane? = null
 
     @FXML
-     var button_subaccount_test: Button? = null
+    var button_subaccount_test: Button? = null
 
     @FXML
-     var button_mainaccount_test: Button? = null
+    var button_mainaccount_test: Button? = null
 
     @FXML
-     var textfield_subaccount_user: TextField? = null
+    var textfield_subaccount_user: TextField? = null
 
     @FXML
     var button_clone_account: Button? = null
 
     @FXML
-     var passwordfield_mainaccount_password: PasswordField? = null
+    var passwordfield_mainaccount_password: PasswordField? = null
 
     @FXML
-     var passwordfield_subaccount_password: PasswordField? = null
+    var passwordfield_subaccount_password: PasswordField? = null
 
     @FXML
     var progressbar_clone_account: ProgressBar? = null
 
     @FXML
-     var checkbox_two_step_submit: CheckBox? = null
+    var checkbox_two_step_submit: CheckBox? = null
 
     @FXML
-     var hyperlink_about_1: Hyperlink? = null
+    var hyperlink_about_1: Hyperlink? = null
 
     @FXML
-     var hyperlink_about_2: Hyperlink? = null
+    var hyperlink_about_2: Hyperlink? = null
 
     @FXML
-     var hyperlink_about_3: Hyperlink? = null
+    var hyperlink_about_3: Hyperlink? = null
 
     @FXML
-     var hyperlink_about_4: Hyperlink? = null
+    var hyperlink_about_4: Hyperlink? = null
 
     @FXML
     fun button_mainaccount_test_onAction() {
