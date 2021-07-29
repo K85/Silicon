@@ -93,21 +93,25 @@ class App : Application() {
         /**
          * JavaFXInstance: App
          */
+        @JvmStatic
         val appInstance = JavaFXInstance<AppController>()
 
         /**
          * JavaFXInstance: Problems
          */
+        @JvmStatic
         val problemsInstance = JavaFXInstance<ProblemsController>()
 
         /**
          * JavaFXInstance: Status
          */
+        @JvmStatic
         val statusInstance = JavaFXInstance<StatusController>()
 
         /**
          * JavaFXInstance: Settings
          */
+        @JvmStatic
         val settingsInstance = JavaFXInstance<SettingsController>()
     }
 }

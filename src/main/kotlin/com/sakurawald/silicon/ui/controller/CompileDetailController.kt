@@ -48,12 +48,18 @@ class CompileDetailController : WebViewController() {
             Platform.runLater {
                 // Request.
                 val compileDetailRequest = CompileDetailRequest(mainAccount, submitResponse.runID)
-                val compileDetailResponse = currentActionSet.compileDetailAction!!.execute(compileDetailRequest)
 
-                // Update Webview.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
-                    compileDetailResponse!!.HTML
-                )
+                try {
+                    val compileDetailResponse = currentActionSet.compileDetailAction!!.execute(compileDetailRequest)
+
+                    // Update Webview.
+                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                        compileDetailResponse!!.HTML
+                    )
+                } catch (e: Exception) {
+                    LoggerManager.reportException(e)
+                }
+
             }
         }
     }

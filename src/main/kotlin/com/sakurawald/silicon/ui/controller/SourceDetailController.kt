@@ -44,15 +44,18 @@ class SourceDetailController : WebViewController() {
             stage.show()
             /** Update Source Detail.  */
             Platform.runLater {
-
                 // Request.
                 val sourceDetailRequest = SourceDetailRequest(mainAccount, submitResponse.runID)
-                val sourceDetailResponse = currentActionSet.sourceDetailAction!!.execute(sourceDetailRequest)
+                try {
+                    val sourceDetailResponse = currentActionSet.sourceDetailAction!!.execute(sourceDetailRequest)
+                    // Update Webview.
+                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                        sourceDetailResponse.HTML
+                    )
+                } catch (e: Exception) {
+                    LoggerManager.reportException(e)
+                }
 
-                // Update Webview.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
-                    sourceDetailResponse.HTML
-                )
             }
         }
     }

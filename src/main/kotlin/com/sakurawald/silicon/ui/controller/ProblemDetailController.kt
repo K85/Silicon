@@ -46,14 +46,19 @@ class ProblemDetailController : WebViewController() {
             /** Update Problem Detail.  */
             Platform.runLater {
 
-                // Request ProblemDetail.
-                val problemDetailResponse =
-                    currentActionSet.problemDetailAction!!.execute(ProblemDetailRequest(problem))
+                try {
+                    // Request ProblemDetail.
+                    val problemDetailResponse =
+                        currentActionSet.problemDetailAction!!.execute(ProblemDetailRequest(problem))
 
-                // Update WebView.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
-                    problemDetailResponse.HTML
-                )
+                    // Update WebView.
+                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                        problemDetailResponse.HTML
+                    )
+                } catch (e: Exception) {
+                    LoggerManager.reportException(e)
+                }
+
             }
         }
     }

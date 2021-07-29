@@ -18,9 +18,9 @@ data class Account(@NECESSARY var userID: String?, @NECESSARY var password: Stri
             if (userID != null && password != null) {
                 if (field != null) return field
                 val loginResponse = currentActionSet.loginAction.execute(LoginRequest(this))
-                (loginResponse.token)
+                return loginResponse.token
             }
-            return field
+            return null
         }
 
     companion object {

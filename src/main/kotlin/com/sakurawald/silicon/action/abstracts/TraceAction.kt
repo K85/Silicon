@@ -15,7 +15,7 @@ import com.sakurawald.silicon.ui.controller.CompileDetailController
 import com.sakurawald.silicon.util.JavaFxUtil.DialogTools
 import javafx.application.Platform
 
-abstract class TraceAction : Action<TraceRequest, TraceResponse>() {
+open class TraceAction : Action<TraceRequest, TraceResponse>() {
     override fun execute(requestBean: TraceRequest): TraceResponse {
         /** Trace This SubmitRequest.  */
         val traceSubmitRequest = requestBean.submitRequest

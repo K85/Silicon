@@ -34,11 +34,13 @@ abstract class ActionSet {
     abstract val problemsAction: ProblemsAction?
     abstract val problemDetailAction: ProblemDetailAction?
     abstract val sourceDetailAction: SourceDetailAction?
-    abstract val noticeAction: NoticeAction?
+    open val noticeAction: NoticeAction?
+        get() = NoticeAction()
     abstract val compileDetailAction: CompileDetailAction?
 
     @NECESSARY
-    abstract val traceAction: TraceAction
+    open val traceAction: TraceAction
+        get() = TraceAction()
     abstract val baseURL: String
     abstract val actionSetName: String
     val codeEditorURL: String

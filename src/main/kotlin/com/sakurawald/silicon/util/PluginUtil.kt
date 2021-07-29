@@ -191,14 +191,14 @@ object PluginUtil {
     /**
      * Java语言的URLEncode标准
      */
-    fun fastEncodeURL(rawHTML: String?, enc: String?): String? {
+    fun fastEncodeURL(rawHTML: String, enc: String?): String? {
         return HttpUtil.encodeURL(rawHTML, enc)
     }
 
     /**
      * @see fastEncodeURL
      */
-    fun fastDecodeURL(rawHTML: String?, enc: String?): String? {
+    fun fastDecodeURL(rawHTML: String, enc: String?): String? {
         return HttpUtil.decodeURL(rawHTML, enc)
     }
 
@@ -212,6 +212,14 @@ object PluginUtil {
             LoggerManager.reportException(e)
         }
         return rawHTML
+    }
+
+    fun fastBase64Encode(str: String): String {
+        return Base64.getEncoder().encodeToString(str.toByteArray())
+    }
+
+    fun fastBase64Decode(str: String): ByteArray? {
+        return Base64.getDecoder().decode(str.toByteArray())
     }
 
     init {

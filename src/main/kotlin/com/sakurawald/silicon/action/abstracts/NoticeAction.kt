@@ -8,7 +8,7 @@ import javafx.application.Platform
 /**
  * 用于Silicon的公告板的指令集.
  */
-abstract class NoticeAction : Action<NoticeRequest, NoticeResponse>() {
+open class NoticeAction : Action<NoticeRequest, NoticeResponse>() {
     override fun execute(requestBean: NoticeRequest): NoticeResponse {
         val sentence = HitoKotoAPI.randomSentence
         Platform.runLater { requestBean.noticeLabel.text = sentence.formatedString }
