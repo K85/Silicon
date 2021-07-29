@@ -2,7 +2,7 @@ package com.sakurawald.silicon.ui
 
 import com.sakurawald.silicon.data.beans.JavaFXInstance
 import com.sakurawald.silicon.debug.LoggerManager
-import com.sakurawald.silicon.file.*
+import com.sakurawald.silicon.file.FileManager
 import com.sakurawald.silicon.ui.controller.AppController
 import com.sakurawald.silicon.ui.controller.ProblemsController
 import com.sakurawald.silicon.ui.controller.SettingsController
@@ -15,12 +15,15 @@ import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.scene.control.*
+import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.ButtonType
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
+import kotlin.system.exitProcess
 
 class App : Application() {
+
     @Throws(Exception::class)
     override fun start(appStage: Stage) {
         val loader = FXMLLoader(javaClass.getResource("App.fxml"))
@@ -49,41 +52,41 @@ class App : Application() {
                 LoggerManager.logDebug("End Application...", true)
 
                 // Exit JVM.
-                System.exit(0)
+                exitProcess(0)
             } else {
                 event.consume()
             }
         }
         appStage.xProperty()
-            .addListener { observableValue: ObservableValue<out Number?>?, number: Number?, t1: Number? -> appInstance.controller!!.followAppWindowMove() }
+            .addListener { _: ObservableValue<out Number?>?, _: Number?, _: Number? -> appInstance.controller!!.followAppWindowMove() }
         appStage.yProperty()
-            .addListener { observableValue: ObservableValue<out Number?>?, number: Number?, t1: Number? -> appInstance.controller!!.followAppWindowMove() }
+            .addListener { _: ObservableValue<out Number?>?, _: Number?, _: Number? -> appInstance.controller!!.followAppWindowMove() }
         /** AfterInit.  */
         appInstance.controller!!.afterInitialize()
     }
 
-    fun beforeJVMEXit() {
+    private fun beforeJVMEXit() {
         /** Save Memories.  */
         val inputProblemID = appInstance.controller!!.textfield_problemID!!.text
         if (inputProblemID != null) {
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.inputProblemID =
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.inputProblemID =
                 inputProblemID
         }
         val inputCode = appInstance.controller!!.textarea_code!!.text
         if (inputCode != null) {
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.inputCode = inputCode
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.inputCode = inputCode
         }
         val selectedActionSet = appInstance.controller!!.combobox_actionSet!!.selectionModel.selectedItem
         if (selectedActionSet != null) {
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.selectedActionSet =
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.selectedActionSet =
                 selectedActionSet.actionSetName
         }
         val selectedLanguage = appInstance.controller!!.combobox_language!!.selectionModel.selectedItem
         if (selectedLanguage != null) {
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.selectedLanguage =
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.selectedLanguage =
                 selectedLanguage.language_name
         }
-        FileManager.Companion.tempConfig_File!!.saveFile()
+        FileManager.tempConfig_File!!.saveMemoryConfigToDisk()
     }
 
     companion object {

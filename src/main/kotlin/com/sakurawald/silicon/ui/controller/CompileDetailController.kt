@@ -18,6 +18,7 @@ import java.io.IOException
 class CompileDetailController : WebViewController() {
 
     companion object {
+        @JvmStatic
         fun showCompileDetailWindow(submitResponse: SubmitResponse) {
             /** Support: CompileDetailAction ?  */
             val compileDetailAction = currentActionSet.compileDetailAction
@@ -45,13 +46,14 @@ class CompileDetailController : WebViewController() {
             stage.show()
             /** Update Source Detail  */
             Platform.runLater {
-
                 // Request.
                 val compileDetailRequest = CompileDetailRequest(mainAccount, submitResponse.runID)
                 val compileDetailResponse = currentActionSet.compileDetailAction!!.execute(compileDetailRequest)
 
                 // Update Webview.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(compileDetailResponse!!.hTML)
+                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                    compileDetailResponse!!.HTML
+                )
             }
         }
     }

@@ -13,12 +13,13 @@ import java.util.*
 /**
  * 一言的API.
  */
+@Suppress("LocalVariableName")
 object HitoKotoAPI {
     /**
      * 获取一言Get请求的地址
      */
     private val requestURL: String
-        private get() = "https://v1.hitokoto.cn"
+        get() = "https://v1.hitokoto.cn"
     /** 封装JSON数据  */// 构造JsonObject对象
     /** 解析JSON数据  */
     /** 获取JSON数据  */
@@ -27,29 +28,30 @@ object HitoKotoAPI {
     /**
      * 返回随机的一句一言
      *
-     * @return 获取到的句子, 失败返回[空数据的Sentence].
+     * @return 获取到的句子, 失败返回Sentence空对象.
      */
     val randomSentence: Sentence
         get() {
             /** 获取JSON数据  */
             /** 获取JSON数据  */
-            val JSON = randomSentence_JSON ?: return Sentence.Companion.nullSentence
+            val JSON = randomSentence_JSON ?: return Sentence.nullSentence
 
             // 若未找到结果，则返回null
             /** 解析JSON数据  */
 
             val jo: JsonObject = JsonParser.parseString(JSON) as JsonObject // 构造JsonObject对象
-            val response: JsonObject = jo.getAsJsonObject()
-            val id: Int = response.get("id").getAsInt()
-            val content: String = response.get("hitokoto").getAsString()
-            val type: String = response.get("type").getAsString()
-            val from: String = response.get("from").getAsString()
-            val creator: String = response.get("creator").getAsString()
-            val created_at: String = response.get("created_at").getAsString()
+            val response: JsonObject = jo.asJsonObject
+            val id: Int = response.get("id").asInt
+            val content: String = response.get("hitokoto").asString
+            val type: String = response.get("type").asString
+            val from: String = response.get("from").asString
+            val creator: String = response.get("creator").asString
+            val createdAt: String = response.get("created_at").asString
+
             /** 封装JSON数据  */
             val result = Sentence(
                 id, content, type, from, creator,
-                created_at
+                createdAt
             )
             logDebug("HitoKoto", "Get Sentence >> $result")
             return result
@@ -57,11 +59,11 @@ object HitoKotoAPI {
 
     /** 关闭Response的body  */
     private val randomSentence_JSON: String?
-        private get() {
+        get() {
             logDebug("HitoKoto", "Get Random Sentence -> Run")
             var result: String? = null
             val client = OkHttpClient()
-            var request: Request? = null
+            val request: Request?
             val URL = requestURL
             logDebug("HitoKoto", "Request URL >> $URL")
 
@@ -74,7 +76,7 @@ object HitoKotoAPI {
                 JSON = response.body!!.string()
                 result = JSON
             } catch (e: IOException) {
-                LoggerManager.logError(e)
+                LoggerManager.reportException(e)
             }
             logDebug(
                 "HitoKoto",

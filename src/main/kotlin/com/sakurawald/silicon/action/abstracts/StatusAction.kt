@@ -1,7 +1,7 @@
 package com.sakurawald.silicon.action.abstracts
 
 import com.sakurawald.silicon.Silicon.currentActionSet
-import com.sakurawald.silicon.annotation.AUTO
+import com.sakurawald.silicon.annotation.AUTO_USE
 import com.sakurawald.silicon.data.beans.Account
 import com.sakurawald.silicon.data.beans.Page
 import com.sakurawald.silicon.data.beans.request.StatusRequest
@@ -10,12 +10,14 @@ import com.sakurawald.silicon.data.beans.response.SubmitResponse
 import com.sakurawald.silicon.debug.LoggerManager.logDebug
 import java.util.*
 
-abstract class StatusAction : Action<StatusRequest?, StatusResponse?>() {
-    abstract fun execute(statusRequest: StatusRequest): StatusResponse?
-    @AUTO
+abstract class StatusAction : Action<StatusRequest, StatusResponse>() {
+    abstract override fun execute(requestBean: StatusRequest): StatusResponse
+
+    @AUTO_USE
     abstract fun supportStatusPageSkip(): Boolean
-    @AUTO
-    fun getFirstSatisfiedSubmitResponse(
+
+    @AUTO_USE
+    open fun getLatestSatisfiedSubmitResponse(
         submitResponseArrayList: ArrayList<SubmitResponse>,
         userID: String,
         problemID: String
@@ -26,8 +28,8 @@ abstract class StatusAction : Action<StatusRequest?, StatusResponse?>() {
         return null
     }
 
-    @AUTO
-    fun getAllHistoryStatus(account: Account): ArrayList<SubmitResponse?> {
+    @AUTO_USE
+    open fun getAllHistoryStatus(account: Account): ArrayList<SubmitResponse?> {
         logDebug("getAllHistoryStatus >> Account = $account")
         val submitResponseArrayList = ArrayList<SubmitResponse?>()
         var requestHomePage = true
@@ -45,8 +47,8 @@ abstract class StatusAction : Action<StatusRequest?, StatusResponse?>() {
             val statusResponse = currentActionSet.statusAction!!.execute(statusRequest)
 
             // 已没有下一页时, 代表所有记录都查询完毕.
-            logDebug("getAllHistoryStatus >> current Page SubmitResponse count = " + statusResponse!!.submitResponses!!.size)
-            if (statusResponse!!.submitResponses!!.size == 0) break
+            logDebug("getAllHistoryStatus >> current Page SubmitResponse count = " + statusResponse.submitResponses!!.size)
+            if (statusResponse.submitResponses!!.size == 0) break
             submitResponseArrayList.addAll(statusResponse.submitResponses!!)
         }
         return submitResponseArrayList

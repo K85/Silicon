@@ -5,36 +5,38 @@ import com.sakurawald.silicon.ui.controller.AppController
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
-import javafx.scene.control.*
+import javafx.scene.control.ContextMenu
+import javafx.scene.control.MenuItem
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.web.WebView
 
+@Suppress("PropertyName", "unused")
 open class WebViewController {
     @FXML
-    open var webview_core: WebView? = null
+    var webview_core: WebView? = null
 
     open fun followAppWindow() {
-        webview_core!!.scene.window.x = App.Companion.appInstance.stage!!.getX() + App.Companion.appInstance.stage!!
-            .getWidth() - AppController.Companion.WINDOWS_INTERVAL
-        webview_core!!.scene.window.y = App.Companion.appInstance.stage!!.getY()
+        webview_core!!.scene.window.x = App.appInstance.stage!!.x + App.appInstance.stage!!
+            .width - AppController.WINDOWS_INTERVAL
+        webview_core!!.scene.window.y = App.appInstance.stage!!.y
     }
 
     open fun createContextMenu() {
-        var webView = webview_core
-        var contextMenu = ContextMenu()
-        var reload = MenuItem("Reload")
-        reload.onAction = EventHandler { e: ActionEvent? -> webView!!.engine.reload() }
-        var savePage = MenuItem("Next Page")
-        savePage.onAction = EventHandler { e: ActionEvent? ->
+        val webView = webview_core
+        val contextMenu = ContextMenu()
+        val reload = MenuItem("Reload")
+        reload.onAction = EventHandler { webView!!.engine.reload() }
+        val savePage = MenuItem("Next Page")
+        savePage.onAction = EventHandler {
             try {
                 webView!!.engine.history.go(1)
             } catch (exception: IndexOutOfBoundsException) {
                 // Do nothing.
             }
         }
-        var hideImages = MenuItem("Prev Page")
-        hideImages.onAction = EventHandler { e: ActionEvent? ->
+        val hideImages = MenuItem("Prev Page")
+        hideImages.onAction = EventHandler {
             try {
                 webView!!.engine.history.go(-1)
             } catch (exception: IndexOutOfBoundsException) {

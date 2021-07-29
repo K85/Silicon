@@ -1,5 +1,6 @@
 package com.sakurawald.silicon.plugin
 
+@Suppress("unused")
 abstract class SiliconPlugin {
     /**
      * Silicon Plugin在被加载到内存时所调用的方法,

@@ -1,5 +1,6 @@
 package com.sakurawald.silicon.data.beans
 
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 enum class SubmitResult(val result_cn: String, val result_en: String) {
     ACCEPTED("通过", "Accepted"), TIME_LIMIT_EXCEED("时间超限", "Time Limit Exceed"), MEMORY_LIMIT_EXCEED(
         "空间超限",

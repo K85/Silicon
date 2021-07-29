@@ -28,12 +28,12 @@ import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.stage.Modality
 import javafx.stage.Stage
-import javafx.stage.WindowEvent
 import java.io.IOException
 
+@Suppress("PrivatePropertyName", "PropertyName", "FunctionName", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
 class AppController : Controller() {
     @FXML
-    private var button_submit: Button? = null
+    var button_submit: Button? = null
 
     @FXML
     var combobox_actionSet: ComboBox<ActionSet?>? = null
@@ -48,19 +48,20 @@ class AppController : Controller() {
     var textarea_code: TextArea? = null
 
     @FXML
-    private var button_status: Button? = null
+    var button_status: Button? = null
 
     @FXML
-    private var button_problems: Button? = null
+    var button_problems: Button? = null
 
     @FXML
-    private var button_settings: Button? = null
+    var button_settings: Button? = null
 
     @FXML
     var label_notice: Label? = null
 
     @FXML
     var progressbar_submit: ProgressBar? = null
+
     @FXML
     fun label_notice_onMouseClicked(event: MouseEvent?) {
         if (currentActionSet.supportThisAction(currentActionSet.noticeAction)) {
@@ -99,10 +100,10 @@ class AppController : Controller() {
     @FXML
     fun button_problems_onAction(event: ActionEvent?) {
         // Show Window.
-        ProblemsController.Companion.showProblemsWindow()
+        ProblemsController.showProblemsWindow()
 
         // Update Problems.
-        App.Companion.problemsInstance.controller!!.updateProblems(ProblemsRequest(mainAccount, Page.HOME_PAGE))
+        App.problemsInstance.controller!!.updateProblems(ProblemsRequest(mainAccount, Page.HOME_PAGE))
     }
 
     @FXML
@@ -126,27 +127,23 @@ class AppController : Controller() {
     fun followAppWindowMove() {
 
         // Has Open Problems.fxml ?
-        if (!App.Companion.problemsInstance.isEmpty) {
-            App.Companion.problemsInstance.stage!!.setX(
-                App.Companion.appInstance.stage!!.getX() + App.Companion.appInstance.stage!!
-                    .getWidth() - WINDOWS_INTERVAL
-            )
-            App.Companion.problemsInstance.stage!!.setY(App.Companion.appInstance.stage!!.getY())
+        if (!App.problemsInstance.isEmpty) {
+            App.problemsInstance.stage!!.x = App.appInstance.stage!!.x + App.appInstance.stage!!
+                .width - WINDOWS_INTERVAL
+            App.problemsInstance.stage!!.y = App.appInstance.stage!!.y
         }
 
         // Has Open Status.fxml ?
-        if (!App.Companion.statusInstance.isEmpty) {
-            App.Companion.statusInstance.stage!!.setX(
-                App.Companion.appInstance.stage!!.getX() + App.Companion.appInstance.stage!!
-                    .getWidth() - WINDOWS_INTERVAL
-            )
-            App.Companion.statusInstance.stage!!.setY(App.Companion.appInstance.stage!!.getY())
+        if (!App.statusInstance.isEmpty) {
+            App.statusInstance.stage!!.x = App.appInstance.stage!!.x + App.appInstance.stage!!
+                .width - WINDOWS_INTERVAL
+            App.statusInstance.stage!!.y = App.appInstance.stage!!.y
         }
 
         // Has Open Settings.fxml ?
-        if (!App.Companion.settingsInstance.isEmpty) {
-            App.Companion.settingsInstance.stage!!.setX(App.Companion.appInstance.stage!!.getX())
-            App.Companion.settingsInstance.stage!!.setY(App.Companion.appInstance.stage!!.getY())
+        if (!App.settingsInstance.isEmpty) {
+            App.settingsInstance.stage!!.x = App.appInstance.stage!!.x
+            App.settingsInstance.stage!!.y = App.appInstance.stage!!.y
         }
     }
 
@@ -164,7 +161,7 @@ class AppController : Controller() {
 
         // Load ActionSet
         for (`as` in combobox_actionSet!!.items) {
-            if (`as`!!.actionSetName == FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.selectedActionSet) {
+            if (`as`!!.actionSetName == FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.selectedActionSet) {
                 combobox_actionSet!!.selectionModel.select(`as`)
                 return
             }
@@ -176,7 +173,7 @@ class AppController : Controller() {
 
         // Load Language
         for (lang in combobox_language!!.items) {
-            if (lang!!.language_name == FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.selectedLanguage) {
+            if (lang!!.language_name == FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.selectedLanguage) {
                 combobox_language!!.selectionModel.select(lang)
                 return
             }
@@ -186,12 +183,12 @@ class AppController : Controller() {
 
     fun loadMemory_ProblemID() {
         textfield_problemID!!.text =
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.inputProblemID
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.inputProblemID
     }
 
     fun loadMemory_Code() {
         textarea_code!!.text =
-            FileManager.Companion.tempConfig_File!!.specificDataInstance!!.siliconTempMemory.inputCode
+            FileManager.tempConfig_File!!.getConfigDataClassInstance().siliconTempMemory.inputCode
     }
 
     @FXML
@@ -209,18 +206,18 @@ class AppController : Controller() {
             stage.isResizable = false
 
             // Update JavaFX Instances.
-            App.Companion.settingsInstance.updateInstance(loader, stage, loader.getController<SettingsController>())
+            App.settingsInstance.updateInstance(loader, stage, loader.getController())
         } catch (e: IOException) {
             LoggerManager.reportException(e)
         }
 
         // Add Listeners.
-        stage.onCloseRequest = EventHandler { windowEvent: WindowEvent? ->
+        stage.onCloseRequest = EventHandler {
             // Save All Settings.
-            App.Companion.settingsInstance.controller!!.saveAllSettings()
+            App.settingsInstance.controller!!.saveAllSettings()
 
             // Update.
-            App.Companion.settingsInstance.emptyInstance()
+            App.settingsInstance.emptyInstance()
         }
 
         // Move Window.
@@ -234,14 +231,14 @@ class AppController : Controller() {
     fun button_status_onAction(event: ActionEvent?) {
 
         // Show Window.
-        StatusController.Companion.showStatusWindow()
+        StatusController.showStatusWindow()
 
         // Set Status Control Params.
-        App.Companion.statusInstance.controller!!.currentQueryProblemID = null
-        App.Companion.statusInstance.controller!!.currentQueryUserID = null
+        App.statusInstance.controller!!.currentQueryProblemID = null
+        App.statusInstance.controller!!.currentQueryUserID = null
 
         // Update Status.
-        App.Companion.statusInstance.controller!!.button_home_page_onAction(null)
+        App.statusInstance.controller!!.button_home_page_onAction()
     }
 
     private fun checkInput(): Boolean {
@@ -267,7 +264,7 @@ class AppController : Controller() {
         }
 
         // Option: MainAccount.
-        if (Account.Companion.isEmpty(mainAccount)) {
+        if (Account.isEmpty(mainAccount)) {
             Platform.runLater { DialogTools.errorDialog("Main-Account cannot be empty.") }
             return false
         }
@@ -280,7 +277,7 @@ class AppController : Controller() {
         if (event.button == MouseButton.SECONDARY
             && event.clickCount == 2
         ) {
-            CodeEditorController.Companion.showCodeEditor()
+            CodeEditorController.showCodeEditor()
         }
     }
 
@@ -290,61 +287,51 @@ class AppController : Controller() {
         if (!checkInput()) {
             return
         }
-        Thread(label@ Runnable {
+        Thread(Runnable {
             /** Control ProgressBar.  */
-            /** Control ProgressBar.  */
-            App.Companion.appInstance.controller!!.showSubmitProgressBar()
-            /** Call: NoticeAction.  */
+            App.appInstance.controller!!.showSubmitProgressBar()
             /** Call: NoticeAction.  */
             if (currentActionSet.supportThisAction(currentActionSet.noticeAction)) {
                 currentActionSet.noticeAction!!.execute(
                     NoticeRequest(
-                        App.Companion.appInstance.controller!!.label_notice!!,
+                        App.appInstance.controller!!.label_notice!!,
                         true
                     )
                 )
             }
             /** Get Data.  */
-            /** Get Data.  */
             val language = combobox_language!!.selectionModel.selectedItem!!.language_id
             val code = textarea_code!!.text
             // Trim ProblemID.
             val problemID = textfield_problemID!!.text.trim { it <= ' ' }
-            val submitAccount: Account?
             var submitRequest: SubmitRequest
             /** Two-Step Submit.  */
-            /** Two-Step Submit.  */
-            if (FileManager.Companion.accountsConfig_file!!.getAccountConfig(currentActionSet.actionSetName)!!.subAccount.two_step_submit) {
+            if (FileManager.accountsConfig_file!!.getAccountConfig(currentActionSet.actionSetName)!!.subAccount.twoStepSubmit) {
                 /** Check SubAccount.  */
-                /** Check SubAccount.  */
-                if (Account.Companion.isEmpty(subAccount)) {
+                if (Account.isEmpty(subAccount)) {
                     Platform.runLater { DialogTools.errorDialog("Sub-Account cannot be empty.") }
-                    App.Companion.appInstance.controller!!.hideSubmitProgressBar()
+                    App.appInstance.controller!!.hideSubmitProgressBar()
                     return@Runnable
                 }
                 /** Call: two_step_submit().  */
-                /** Call: two_step_submit().  */
                 submitRequest = SubmitRequest(subAccount!!, problemID, language, code)
-                val submitAccountAccepted = currentActionSet.two_step_submit(submitRequest)
+                val submitAccountAccepted = currentActionSet.testTwoStepSubmit(submitRequest)
                 if (!submitAccountAccepted) {
-                    App.Companion.appInstance.controller!!.hideSubmitProgressBar()
+                    App.appInstance.controller!!.hideSubmitProgressBar()
                     return@Runnable
                 }
             }
             /** MainAccount -> Call: SubmitAction  */
-            /** MainAccount -> Call: SubmitAction  */
-            submitAccount = mainAccount
+            val submitAccount: Account? = mainAccount
             submitRequest = SubmitRequest(submitAccount!!, problemID, language, code)
-            val submitResponse = currentActionSet.submitAction!!.execute(submitRequest)
+            val submitResponse = currentActionSet.submitAction.execute(submitRequest)
             /** Handle SubmitError.  */
-            /** Handle SubmitError.  */
-            if (currentActionSet.handleSubmitError(submitResponse)) {
+            if (currentActionSet.handleActionError(submitResponse)) {
                 return@Runnable
             }
             /** MainAccount -> Call: TraceAction.  */
-            /** MainAccount -> Call: TraceAction.  */
             if (currentActionSet.supportThisAction(currentActionSet.traceAction)) {
-                currentActionSet.traceAction!!.execute(TraceRequest(submitRequest))
+                currentActionSet.traceAction.execute(TraceRequest(submitRequest))
             } else {
                 hideSubmitProgressBar()
             }

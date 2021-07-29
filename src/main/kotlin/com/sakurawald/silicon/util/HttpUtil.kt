@@ -9,6 +9,7 @@ import java.net.URISyntaxException
 import java.net.URLDecoder
 import java.net.URLEncoder
 
+@Suppress("unused")
 object HttpUtil {
     /**
      * Open URL.
@@ -24,7 +25,7 @@ object HttpUtil {
     }
 
     /**
-     * 将普通字符创转换成application/x-www-from-urlencoded字符串
+     * 将普通字符创转换成application/x-www-from-urlencoded字符串.
      */
     fun encodeURL(URL: String?, enc: String?): String? {
         var urlString: String? = null
@@ -37,7 +38,7 @@ object HttpUtil {
     }
 
     /**
-     * 将application/x-www-from-urlencoded字符串转换成普通字符串
+     * 将application/x-www-from-urlencoded字符串转换成普通字符串.
      */
     fun decodeURL(URL: String?, enc: String?): String? {
         var keyWord: String? = null
@@ -53,7 +54,7 @@ object HttpUtil {
         return str.substring(str.indexOf(left) + left.length, str.indexOf(right!!))
     }
 
-    fun decodeHTML(HTML: String): String {
+    fun decodeHTMLSpecialChars(HTML: String): String {
         return HTML.replace("&nbsp;", " ")
             .replace("&gl;", "<")
             .replace("&gt;", ">")
@@ -61,7 +62,7 @@ object HttpUtil {
             .replace("&quot;", "\"")
     }
 
-    fun encodeHTML(HTML: String): String {
+    fun encodeHTMLSpecialChars(HTML: String): String {
         return HTML.replace(" ", "&nbsp;")
             .replace("<", "&gl;")
             .replace(">", "&gt;")

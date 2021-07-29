@@ -8,38 +8,38 @@ import com.sakurawald.silicon.util.FileUtil
 import java.io.*
 
 /**
- * 描述一个<配置文件对象>.
-</配置文件对象> */
-open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Class<*>?) {
+ * 描述一个配置文件对象.*/
+@Suppress("MemberVisibilityCanBePrivate")
+open class ConfigFile<DO>(filePath: String?, fileName: String?, configDataClass: Class<DO>?) {
     /**
-     * 用于<反射>的<配置文件Data对象>
-    </配置文件Data对象></反射> */
-    var configDataClass: Class<*>? = null
+     * 用于反射的配置文件Data对象*/
+    private var configDataClass: Class<DO>? = null
 
     /**
-     * @return 获取<该配置文件>的<路径名>
-    </路径名></该配置文件> */
-    var filePath: String? = null
+     * @return 获取该配置文件的路径名*/
+    private var filePath: String? = null
 
     /**
-     * @return 获取<该配置文件>的<文件名>
-    </文件名></该配置文件> */
-    var fileName: String? = null
+     * @return 获取该配置文件的文件名*/
+    private var fileName: String? = null
 
     /**
      * 标注该对象是否已完成初始化
      */
-    var isHasInit = false
+    var initialized = false
 
     /**
-     * 存储<Data类的实例对象>
-    </Data类的实例对象> */
-    private var configDataClassInstance: Any? = null
+     * 存储Data类的实例对象*/
+    private var configDataClassInstance: DO? = null
 
     /**
-     * 创建<该Data类的实例对象>
-    </该Data类的实例对象> */
-    fun createConfigDataClassInstance() {
+     * @return 获取该配置文件的File对象*/
+    private val file: File
+        get() = File(filePath + fileName)
+
+    /**
+     * 创建该Data类的实例对>*/
+    private fun createConfigDataClassInstance() {
         logDebug(
             "FileSystem",
             "Use Reflect to Create the instance of Data Class >> " + configDataClass!!.simpleName
@@ -52,11 +52,10 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
     }
 
     /**
-     * 在<本地存储>中<创建空文件>.
-    </创建空文件></本地存储> */
-    fun createFile() {
+     * 在本地存储中创建空文件>*/
+    fun createConfigEmptyFileOnDisk() {
         val file = File(filePath + fileName)
-        file.getParentFile().mkdirs()
+        file.parentFile.mkdirs()
         try {
             file.createNewFile()
         } catch (e: IOException) {
@@ -65,58 +64,49 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
     }
 
     /**
-     * @return 获取<该Data类的实例对象>
-    </该Data类的实例对象> */
-    fun getConfigDataClassInstance(): Any? {
-        if (configDataClassInstance == null) {
-            createConfigDataClassInstance()
-        }
-        return configDataClassInstance
-    }
-
-    /**
-     * @return 获取<该配置文件>的<File对象>
-    </File对象></该配置文件> */
-    val file: File
-        get() = File(filePath + fileName)
-
-    /**
      * 初始化方法. 一般在创建完该对象后, 立即调用init().
      */
     @Throws(IllegalArgumentException::class, IllegalAccessException::class, IOException::class)
     fun init() {
 
         // 调用方法, 给该File的Data的静态变量进行赋值
-        if (isExist == false) {
-            createFile()
-            writeNormalFile()
+        if (!isConfigFileExistOnDisk) {
+            createConfigEmptyFileOnDisk()
+            saveDefaultConfigToDisk()
         }
-        LoggerManager.logDebug(
+        logDebug(
             "FileSystem",
-            "Load Local File to Memory >> " + fileName, true
+            "Load Local File to Memory >> $fileName", true
         )
 
         // 从本地存储加载相应的配置文件
-        loadFile()
+        loadConfigToMemoryFromDisk()
 
         // Set Flag.
-        isHasInit = true
+        initialized = true
     }
 
     /**
-     * @return 判断该<配置文件>是否已经存在.
-    </配置文件> */
-    val isExist: Boolean
+     * @return 判断该配置文件是否已经存在.*/
+    val isConfigFileExistOnDisk: Boolean
         get() {
             val file = File(filePath + fileName)
             return file.exists()
         }
 
     /**
-     * 从<本地存储>加载<数据>到<内存>.
-    </内存></数据></本地存储> */
+     * @return 获取该Data类的实例对象*/
+    fun getConfigDataClassInstance(): DO {
+        if (configDataClassInstance == null) {
+            createConfigDataClassInstance()
+        }
+        return configDataClassInstance!!
+    }
+
+    /**
+     * 从本地存储加载数据到内存.*/
     @Throws(IllegalArgumentException::class, IllegalAccessException::class)
-    fun loadFile() {
+    fun loadConfigToMemoryFromDisk() {
         var reader: BufferedReader? = null
         try {
             reader = BufferedReader(FileReader(file))
@@ -139,12 +129,11 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
     }
 
     /**
-     * 重新从<本地存储>加载<数据>到<内存>. 该方法会<覆盖><内存>中<已有的数据>.
-    </已有的数据></内存></覆盖></内存></数据></本地存储> */
+     * 重新从本地存储加载数据到内存. 该方法会覆盖内存中已有的数据.*/
     fun reloadFile() {
-        logDebug("FileSystem", "Start to Reload Config: " + fileName)
+        logDebug("FileSystem", "Start to Reload Config: $fileName")
         try {
-            loadFile()
+            loadConfigToMemoryFromDisk()
         } catch (e: IllegalArgumentException) {
             LoggerManager.reportException(e)
         } catch (e: IllegalAccessException) {
@@ -153,12 +142,11 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
     }
 
     /**
-     * 保存<配置文件>到本地存储.
-    </配置文件> */
-    fun saveFile() {
+     * 保存配置文件到本地存储.*/
+    fun saveMemoryConfigToDisk() {
         logDebug(
             "FileSystem",
-            "Save Memory Data to Local File >> " + fileName
+            "Save Memory Data to Local File >> $fileName"
         )
 
         // 定义要写出的本地配置文件
@@ -177,11 +165,10 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
     }
 
     /**
-     * 写出<该配置文件>的<默认配置文件数据>.
-    </默认配置文件数据></该配置文件> */
+     * 写出该配置文件的默认配置文件数据.*/
     @Throws(IllegalArgumentException::class, IllegalAccessException::class, IOException::class)
-    fun writeNormalFile() {
-        logDebug("FileSystem", "Start to Write Default ConfigFile Data >> " + fileName)
+    fun saveDefaultConfigToDisk() {
+        logDebug("FileSystem", "Start to Write Default ConfigFile Data >> $fileName")
 
         // 定义要写出的本地配置文件
         val file = File(filePath + fileName)
@@ -195,11 +182,11 @@ open class ConfigFile(filePath: String?, fileName: String?, configDataClass: Cla
 
     companion object {
         /**
-         * @return 该应用程序的[配置文件存储路径].
+         * @return 该应用程序的配置文件存储路径.
          */
         val applicationConfigPath: String
             get() {
-                var result: String? = null
+                var result: String?
                 result = FileUtil.javaRunPath
                 result = "$result\\Silicon\\"
                 return result

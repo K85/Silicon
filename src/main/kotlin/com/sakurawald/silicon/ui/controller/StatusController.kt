@@ -2,7 +2,10 @@ package com.sakurawald.silicon.ui.controller
 
 import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.Silicon.mainAccount
-import com.sakurawald.silicon.data.beans.*
+import com.sakurawald.silicon.data.beans.Account
+import com.sakurawald.silicon.data.beans.Page
+import com.sakurawald.silicon.data.beans.Problem
+import com.sakurawald.silicon.data.beans.SubmitResult
 import com.sakurawald.silicon.data.beans.request.StatusRequest
 import com.sakurawald.silicon.data.beans.response.SubmitResponse
 import com.sakurawald.silicon.debug.LoggerManager
@@ -11,7 +14,6 @@ import com.sakurawald.silicon.util.JavaFxUtil.DialogTools
 import com.sakurawald.silicon.util.JavaFxUtil.WindowTools
 import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
-import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -27,6 +29,7 @@ import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import java.io.IOException
 
+@Suppress("PrivatePropertyName", "FunctionName", "MemberVisibilityCanBePrivate", "PropertyName")
 class StatusController : Controller() {
     /**
      * Status Control Params.
@@ -35,53 +38,54 @@ class StatusController : Controller() {
     var currentQueryUserID: String? = null
 
     @FXML
-    private var textfield_page: TextField? = null
+     var textfield_page: TextField? = null
 
     @FXML
-    private var button_go: Button? = null
+     var button_go: Button? = null
 
     @FXML
-    private var button_prev_page: Button? = null
+     var button_prev_page: Button? = null
 
     @FXML
-    private var button_next_page: Button? = null
+     var button_next_page: Button? = null
 
     @FXML
-    private var tableview_submit_results: TableView<SubmitResponse?>? = null
+     var tableview_submit_results: TableView<SubmitResponse?>? = null
 
     @FXML
-    private var tablecolumn_run_id: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_run_id: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_user: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_user: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_problem: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_problem: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_result: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_result: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_memory: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_memory: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_time: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_time: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_language: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_language: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_code_length: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_code_length: TableColumn<SubmitResponse, String?>? = null
 
     @FXML
-    private var tablecolumn_submit_time: TableColumn<SubmitResponse, String?>? = null
+     var tablecolumn_submit_time: TableColumn<SubmitResponse, String?>? = null
+
     @FXML
-    fun button_go_onAction(event: ActionEvent?) {
+    fun button_go_onAction() {
         update_status(StatusRequest(mainAccount, currentQueryProblemID, currentQueryUserID, textfield_page!!.text))
     }
 
     @FXML
-    fun button_next_page_onAction(event: ActionEvent?) {
+    fun button_next_page_onAction() {
         /** Update Page Textfield.  */
         try {
             textfield_page!!.text = (textfield_page!!.text.toInt() + 1).toString()
@@ -90,14 +94,14 @@ class StatusController : Controller() {
         }
         /** Call: StatusAction.  */
         if (currentActionSet.statusAction!!.supportStatusPageSkip()) {
-            button_go_onAction(null)
+            button_go_onAction()
         } else {
             update_status(StatusRequest(mainAccount, currentQueryProblemID, currentQueryUserID, Page.NEXT_PAGE))
         }
     }
 
     @FXML
-    fun button_prev_page_onAction(event: ActionEvent?) {
+    fun button_prev_page_onAction() {
         /** Update Page Textfield.  */
         try {
             val newPage = textfield_page!!.text.toInt() - 1
@@ -113,7 +117,7 @@ class StatusController : Controller() {
         }
         /** Call: StatusAction.  */
         if (currentActionSet.statusAction!!.supportStatusPageSkip()) {
-            button_go_onAction(null)
+            button_go_onAction()
         } else {
             update_status(StatusRequest(mainAccount, currentQueryProblemID, currentQueryUserID, Page.PREV_PAGE))
         }
@@ -144,7 +148,7 @@ class StatusController : Controller() {
     }
 
     @FXML
-    fun button_home_page_onAction(event: ActionEvent?) {
+    fun button_home_page_onAction() {
         textfield_page!!.text = Page.FIRST_PAGE
         update_status(StatusRequest(mainAccount, currentQueryProblemID, currentQueryUserID, Page.HOME_PAGE))
     }
@@ -165,7 +169,7 @@ class StatusController : Controller() {
         }
         tablecolumn_user!!.setCellValueFactory { cellData: TableColumn.CellDataFeatures<SubmitResponse, String?> ->
             SimpleStringProperty(
-                cellData.value.submitAccount!!.userID
+                cellData.value.submitAccount.userID
             )
         }
         tablecolumn_problem!!.setCellValueFactory { cellData: TableColumn.CellDataFeatures<SubmitResponse, String?> ->
@@ -210,26 +214,17 @@ class StatusController : Controller() {
                 override fun updateItem(item: String?, empty: Boolean) {
                     super.updateItem(item, empty)
                     if (!isEmpty) {
-                        if (SubmitResult.ACCEPTED.same(this.item!!)) {
-                            textFill = Color.BLUE
-                        } else if (SubmitResult.COMPILE_ERROR.same(this.item!!)) {
-                            textFill = Color.GREEN
-                        } else if (SubmitResult.RUNTIME_ERROR.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.PRESENTATION_ERROR.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.TIME_LIMIT_EXCEED.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.MEMORY_LIMIT_EXCEED.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.OUTPUT_LIMIT_EXCEED.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.WRONG_ANSWER.same(this.item!!)) {
-                            textFill = Color.RED
-                        } else if (SubmitResult.WAITING.same(this.item!!)) {
-                            textFill = Color.GREEN
-                        } else if (SubmitResult.UNKNOWN.same(this.item!!)) {
-                            textFill = Color.GRAY
+                        when {
+                            SubmitResult.ACCEPTED.same(this.item!!) -> textFill = Color.BLUE
+                            SubmitResult.COMPILE_ERROR.same(this.item!!) -> textFill = Color.GREEN
+                            SubmitResult.RUNTIME_ERROR.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.PRESENTATION_ERROR.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.TIME_LIMIT_EXCEED.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.MEMORY_LIMIT_EXCEED.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.OUTPUT_LIMIT_EXCEED.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.WRONG_ANSWER.same(this.item!!) -> textFill = Color.RED
+                            SubmitResult.WAITING.same(this.item!!) -> textFill = Color.GREEN
+                            SubmitResult.UNKNOWN.same(this.item!!) -> textFill = Color.GRAY
                         }
                     }
                     text = item
@@ -269,13 +264,13 @@ class StatusController : Controller() {
     fun textfield_page_onKeyReleased(event: KeyEvent) {
         /** Enter Key: Go.  */
         if (event.code == KeyCode.ENTER && currentActionSet.statusAction!!.supportStatusPageSkip()) {
-            button_go_onAction(null)
+            button_go_onAction()
         }
     }
 
     fun update_status(statusRequest: StatusRequest) {
         /** Check MainAccount.  */
-        if (Account.Companion.isEmpty(mainAccount)) {
+        if (Account.isEmpty(mainAccount)) {
             Platform.runLater { DialogTools.errorDialog("Main-Account cannot be empty.") }
             return
         }
@@ -284,7 +279,7 @@ class StatusController : Controller() {
             val statusResponse = currentActionSet.statusAction!!.execute(statusRequest)
             Platform.runLater {
                 tableview_submit_results!!.items.clear()
-                tableview_submit_results!!.items.addAll(statusResponse!!.submitResponses!!)
+                tableview_submit_results!!.items.addAll(statusResponse.submitResponses!!)
                 tableview_submit_results!!.scrollTo(0)
             }
         }.start()
@@ -298,8 +293,8 @@ class StatusController : Controller() {
                 return
             }
             /** Has Open Window: Problems ?  */
-            if (!App.Companion.statusInstance.isEmpty) {
-                App.Companion.statusInstance.stage!!.toFront()
+            if (!App.statusInstance.isEmpty) {
+                App.statusInstance.stage!!.toFront()
                 return
             }
             /** Open Window: Problems  */
@@ -314,17 +309,17 @@ class StatusController : Controller() {
                 stage.isResizable = false
 
                 // Update JavaFX Instances.
-                App.Companion.statusInstance.updateInstance(loader, stage, loader.getController<StatusController>())
+                App.statusInstance.updateInstance(loader, stage, loader.getController())
             } catch (e: IOException) {
                 LoggerManager.reportException(e)
             }
 
             // Add Listeners.
             stage.onCloseRequest =
-                EventHandler { windowEvent: WindowEvent? -> App.Companion.statusInstance.emptyInstance() }
+                EventHandler { App.statusInstance.emptyInstance() }
 
             // Re-move Window.
-            App.Companion.appInstance.controller!!.followAppWindowMove()
+            App.appInstance.controller!!.followAppWindowMove()
 
             // Show Window.
             stage.show()

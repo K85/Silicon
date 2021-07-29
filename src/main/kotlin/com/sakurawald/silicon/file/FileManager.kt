@@ -7,7 +7,15 @@ import java.io.IOException
 /**
  * 用于管理所有的本地配置文件，包括每一个配置文件的命名
  */
-class FileManager private constructor() {
+object FileManager {
+
+    /**
+     * 配置文件列表
+     */
+    var applicationConfig_File: ApplicationConfig_File? = null
+    var accountsConfig_file: AccountsConfig_File? = null
+    var tempConfig_File: TempConfig_File? = null
+
     /**
      * 调用本方法来<初始化>配置文件系统.
     </初始化> */
@@ -44,24 +52,4 @@ class FileManager private constructor() {
         tempConfig_File!!.init()
     }
 
-    companion object {
-        /**
-         * 单例模式
-         */
-        var instance: FileManager? = null
-            get() {
-                if (field == null) {
-                    field = FileManager()
-                }
-                return field
-            }
-            private set
-
-        /**
-         * 配置文件列表
-         */
-        var applicationConfig_File: ApplicationConfig_File? = null
-        var accountsConfig_file: AccountsConfig_File? = null
-        var tempConfig_File: TempConfig_File? = null
-    }
 }

@@ -1,14 +1,14 @@
 package com.sakurawald.silicon.data.beans.request
 
-import com.sakurawald.silicon.annotation.AUTO
+import com.sakurawald.silicon.annotation.AUTO_USE
 import com.sakurawald.silicon.annotation.NECESSARY
-import javafx.scene.control.*
+import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 
-class NoticeRequest : RequestBean {
+open class NoticeRequest : RequestBean {
     @NECESSARY
-    val notice_label: Label
-    var notice_mouse_event: MouseEvent? = null
+    val noticeLabel: Label
+    var noticeMouseEvent: MouseEvent? = null
         private set
 
     /**
@@ -17,23 +17,16 @@ class NoticeRequest : RequestBean {
     var isAutoUpdate = false
         private set
 
-    @AUTO
+    @AUTO_USE
     constructor(notice_label: Label, autoUpdate: Boolean) {
-        this.notice_label = notice_label
+        this.noticeLabel = notice_label
         isAutoUpdate = autoUpdate
     }
 
-    @AUTO
+    @AUTO_USE
     constructor(notice_label: Label, notice_mouse_event: MouseEvent?) {
-        this.notice_label = notice_label
-        this.notice_mouse_event = notice_mouse_event
+        this.noticeLabel = notice_label
+        this.noticeMouseEvent = notice_mouse_event
     }
 
-    override fun toString(): String {
-        return "NoticeRequest{" +
-                "notice_label=" + notice_label +
-                ", notice_mouse_event=" + notice_mouse_event +
-                ", autoUpdate=" + isAutoUpdate +
-                '}'
-    }
 }

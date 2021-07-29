@@ -2,12 +2,10 @@ package com.sakurawald.silicon.util
 
 import java.util.*
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 object NumberUtil {
     /**
      * @return 输入double, 保留指定digit位小数.
-     */
-    /**
-     * @return 输入double, 保留2位小数.
      */
     @JvmOverloads
     fun formatDigit(number: Double, digit: Int = 2): Double {

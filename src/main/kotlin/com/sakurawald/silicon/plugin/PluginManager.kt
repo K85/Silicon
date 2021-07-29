@@ -2,16 +2,19 @@ package com.sakurawald.silicon.plugin
 
 import com.sakurawald.silicon.debug.LoggerManager
 import com.sakurawald.silicon.debug.LoggerManager.logDebug
-import com.sakurawald.silicon.file.*
+import com.sakurawald.silicon.file.ConfigFile
 import java.io.File
-import java.net.*
+import java.net.URL
+import java.net.URLClassLoader
 
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 object PluginManager {
     /**
      * 从本地磁盘加载插件文件.
+     * @return 成功加载的插件数量.
      */
     fun loadPlugins(): Int {
-        val pluginsFolder = File(ConfigFile.Companion.applicationConfigPath + "\\Plugins")
+        val pluginsFolder = File(ConfigFile.applicationConfigPath + "\\Plugins")
         var loadedPluginCount = 0
         for (file in pluginsFolder.listFiles()) {
             if (!file.isFile) continue

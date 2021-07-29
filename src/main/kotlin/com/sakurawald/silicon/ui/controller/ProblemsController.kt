@@ -2,11 +2,12 @@ package com.sakurawald.silicon.ui.controller
 
 import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.Silicon.mainAccount
-import com.sakurawald.silicon.data.beans.*
+import com.sakurawald.silicon.data.beans.Page
+import com.sakurawald.silicon.data.beans.Problem
+import com.sakurawald.silicon.data.beans.ProblemStatus
 import com.sakurawald.silicon.data.beans.request.ProblemsRequest
 import com.sakurawald.silicon.debug.LoggerManager
 import com.sakurawald.silicon.ui.App
-import com.sakurawald.silicon.ui.controller.StatusController
 import com.sakurawald.silicon.util.JavaFxUtil.DialogTools
 import com.sakurawald.silicon.util.JavaFxUtil.WindowTools
 import javafx.application.Platform
@@ -27,45 +28,47 @@ import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import java.io.IOException
 
+@Suppress("PrivatePropertyName", "PropertyName", "FunctionName", "UNUSED_PARAMETER")
 class ProblemsController : Controller() {
     @FXML
-    private var textfield_page: TextField? = null
+    var textfield_page: TextField? = null
 
     @FXML
-    private var button_go: Button? = null
+    var button_go: Button? = null
 
     @FXML
-    private var button_prev_page: Button? = null
+    var button_prev_page: Button? = null
 
     @FXML
-    private var button_next_page: Button? = null
+    var button_next_page: Button? = null
 
     @FXML
-    private var tableview_problems: TableView<Problem?>? = null
+    var tableview_problems: TableView<Problem?>? = null
 
     @FXML
-    private var tablecolumn_status: TableColumn<Problem, String?>? = null
+     var tablecolumn_status: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var tablecolumn_id: TableColumn<Problem, String?>? = null
+     var tablecolumn_id: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var tablecolumn_title: TableColumn<Problem, String?>? = null
+     var tablecolumn_title: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var tablecolumn_ratio_ac_submit: TableColumn<Problem, String?>? = null
+     var tablecolumn_ratio_ac_submit: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var tablecolumn_difficulty: TableColumn<Problem, String?>? = null
+     var tablecolumn_difficulty: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var tablecolumn_date: TableColumn<Problem, String?>? = null
+     var tablecolumn_date: TableColumn<Problem, String?>? = null
 
     @FXML
-    private var textfield_search: TextField? = null
+     var textfield_search: TextField? = null
 
     @FXML
-    private var button_search: Button? = null
+     var button_search: Button? = null
+
     @FXML
     fun button_search_onAction(event: ActionEvent?) {
         updateProblems(ProblemsRequest(mainAccount, textfield_page!!.text, textfield_search!!.text))
@@ -108,22 +111,22 @@ class ProblemsController : Controller() {
         if (event.clickCount == 2 && event.button == MouseButton.PRIMARY) {
 
             ProblemDetailController.showProblemDetailWindow(tableview_problems!!.selectionModel.selectedItem!!)
-            App.Companion.appInstance.controller!!.textfield_problemID!!.setText(tableview_problems!!.selectionModel.selectedItem!!.problemID)
+            App.appInstance.controller!!.textfield_problemID!!.text = tableview_problems!!.selectionModel.selectedItem!!.problemID
         }
 
         // Middle Click -> Set ProblemID.
         if (event.button == MouseButton.MIDDLE) {
-            App.Companion.appInstance.controller!!.textfield_problemID!!.setText(tableview_problems!!.selectionModel.selectedItem!!.problemID)
+            App.appInstance.controller!!.textfield_problemID!!.text = tableview_problems!!.selectionModel.selectedItem!!.problemID
         }
 
         // Double Right Click -> Query Submit History.
         if (event.clickCount == 2 && event.button == MouseButton.SECONDARY) {
-            StatusController.Companion.showStatusWindow()
-            App.Companion.statusInstance.controller
+            StatusController.showStatusWindow()
+            App.statusInstance.controller
                 ?.updateSubmitHistory(tableview_problems!!.selectionModel.selectedItem!!)
-            App.Companion.statusInstance.controller
+            App.statusInstance.controller
                 ?.currentQueryProblemID = tableview_problems!!.selectionModel.selectedItem!!.problemID
-            App.Companion.statusInstance.controller!!.currentQueryUserID = mainAccount!!.userID
+            App.statusInstance.controller!!.currentQueryUserID = mainAccount!!.userID
         }
     }
 
@@ -222,7 +225,7 @@ class ProblemsController : Controller() {
             val problemsResponse = currentActionSet.problemsAction!!.execute(problemsRequest)
             Platform.runLater {
                 tableview_problems!!.items.clear()
-                tableview_problems!!.items.addAll(problemsResponse!!.problems)
+                tableview_problems!!.items.addAll(problemsResponse.problems)
                 tableview_problems!!.scrollTo(0)
             }
         }.start()
@@ -236,8 +239,8 @@ class ProblemsController : Controller() {
                 return
             }
             /** Has Open Window: Problems ?  */
-            if (!App.Companion.problemsInstance.isEmpty) {
-                App.Companion.problemsInstance.stage!!.toFront()
+            if (!App.problemsInstance.isEmpty) {
+                App.problemsInstance.stage!!.toFront()
                 return
             }
             /** Open Window: Problems  */
@@ -252,17 +255,17 @@ class ProblemsController : Controller() {
                 stage.isResizable = false
 
                 // Update JavaFX Instances.
-                App.Companion.problemsInstance.updateInstance(loader, stage, loader.getController<ProblemsController>())
+                App.problemsInstance.updateInstance(loader, stage, loader.getController())
 
                 // Re-move Window.
-                App.Companion.appInstance.controller!!.followAppWindowMove()
+                App.appInstance.controller!!.followAppWindowMove()
             } catch (e: IOException) {
                 LoggerManager.reportException(e)
             }
 
             // Add Listeners.
             stage.onCloseRequest =
-                EventHandler { windowEvent: WindowEvent? -> App.Companion.problemsInstance.emptyInstance() }
+                EventHandler { App.problemsInstance.emptyInstance() }
 
             // Show Window.
             stage.show()

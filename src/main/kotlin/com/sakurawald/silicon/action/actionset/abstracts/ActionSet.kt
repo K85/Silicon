@@ -4,8 +4,9 @@ import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.Silicon.mainAccount
 import com.sakurawald.silicon.Silicon.subAccount
 import com.sakurawald.silicon.action.abstracts.*
-import com.sakurawald.silicon.annotation.AUTO
+import com.sakurawald.silicon.annotation.AUTO_USE
 import com.sakurawald.silicon.annotation.NECESSARY
+import com.sakurawald.silicon.annotation.OPTIONAL
 import com.sakurawald.silicon.data.beans.*
 import com.sakurawald.silicon.data.beans.request.SourceDetailRequest
 import com.sakurawald.silicon.data.beans.request.SubmitRequest
@@ -20,14 +21,15 @@ import javafx.scene.control.ProgressBar
 import java.util.*
 
 /**
- * 描述一组动作集
+ * 描述一组动作集.
  */
+@Suppress("unused")
 abstract class ActionSet {
-    @get:NECESSARY
-    abstract val submitAction: SubmitAction?
+    @NECESSARY
+    abstract val submitAction: SubmitAction
 
-    @get:NECESSARY
-    abstract val loginAction: LoginAction?
+    @NECESSARY
+    abstract val loginAction: LoginAction
     abstract val statusAction: StatusAction?
     abstract val problemsAction: ProblemsAction?
     abstract val problemDetailAction: ProblemDetailAction?
@@ -35,36 +37,54 @@ abstract class ActionSet {
     abstract val noticeAction: NoticeAction?
     abstract val compileDetailAction: CompileDetailAction?
 
-    @get:NECESSARY
-    abstract val traceAction: TraceAction?
+    @NECESSARY
+    abstract val traceAction: TraceAction
     abstract val baseURL: String
+    abstract val actionSetName: String
+    val codeEditorURL: String
+        get() = "http://clioude.space/"
+
+    abstract val supportLanguages: ArrayList<Language>
 
     /**
      * 对获取的原始HTML代码进行适当的编码转换, 以支持中文文本, 防止乱码.
+     * 如果当前OnlineJudge站点可以直接正常访问, 不需要编码转换, 该该方法直接抛出UnsupportedOperationException()即可.
      */
-    open abstract fun encodeHTML(rawHTML: String?): String?
-    open  abstract fun decodeHTML(rawHTML: String?): String?
+    @OPTIONAL
+    open fun encodeHTML(rawHTML: String?): String? {
+        throw UnsupportedOperationException()
+    }
+
+    /**
+     * @see encodeHTML
+     */
+    @OPTIONAL
+    open fun decodeHTML(rawHTML: String?): String? {
+        throw UnsupportedOperationException()
+    }
 
     /**
      * 对资源相对路径的转化.
      */
+    @OPTIONAL
     open fun transferBaseURL(rawHTML: String): String {
         return rawHTML.replace("src=\"", "src=\"$baseURL")
             .replace("href=\"", "href=\"$baseURL")
     }
 
-    abstract val actionSetName: String
-    open override fun toString(): String {
+    override fun toString(): String {
         return actionSetName
     }
 
-    open fun supportThisAction(action: Action<*, *>?): Boolean {
+    @AUTO_USE
+    fun supportThisAction(action: Action<*, *>?): Boolean {
         return action != null
     }
 
+    @AUTO_USE
     open fun cloneAccount() {
-        App.Companion.settingsInstance.controller!!.progressbar_clone_account!!.setProgress(ProgressBar.INDETERMINATE_PROGRESS)
-        App.Companion.settingsInstance.controller!!.button_clone_account!!.setDisable(true)
+        App.settingsInstance.controller!!.progressbar_clone_account!!.progress = ProgressBar.INDETERMINATE_PROGRESS
+        App.settingsInstance.controller!!.button_clone_account!!.isDisable = true
         Thread {
             /** Get SubAccount's All History Status.  */
             /** Get SubAccount's All History Status.  */
@@ -98,10 +118,10 @@ abstract class ActionSet {
                 logDebug("Account Clone >> current SourceDetailResponse = $sourceDetailResponse")
 
                 // Submit Source.
-                val code = sourceDetailResponse!!.source
-                val language_id = getLanguage(submitResponse.language)!!.language_id
-                val submitRequest = SubmitRequest(mainAccount!!, submitResponse.problemID!!, language_id, code!!)
-                currentActionSet.submitAction!!.execute(submitRequest)
+                val code = sourceDetailResponse.source
+                val languageID = getLanguage(submitResponse.language)!!.language_id
+                val submitRequest = SubmitRequest(mainAccount!!, submitResponse.problemID, languageID, code!!)
+                currentActionSet.submitAction.execute(submitRequest)
 
                 // Submit Interval.
                 try {
@@ -111,82 +131,63 @@ abstract class ActionSet {
                 }
             }
             Platform.runLater {
-                App.Companion.settingsInstance.controller!!.progressbar_clone_account!!.setProgress(0.0)
-                App.Companion.settingsInstance.controller!!.button_clone_account!!.setDisable(false)
+                App.settingsInstance.controller!!.progressbar_clone_account!!.progress = 0.0
+                App.settingsInstance.controller!!.button_clone_account!!.isDisable = false
                 DialogTools.informationDialog("Account Clone Done!")
             }
         }.start()
     }
 
-    val codeEditorURL: String
-        get() = "http://clioude.space/"
 
     /**
      * 将结果字符串转化为SubmitResult对象.
      */
+    @OPTIONAL
     open fun getSubmitResult(submitResult: String): SubmitResult {
-        if (submitResult.toLowerCase().contains("accept")) {
-            return SubmitResult.ACCEPTED
+
+        val submitResultText = submitResult.toLowerCase()
+        when {
+            submitResultText.contains("accept") -> return SubmitResult.ACCEPTED
+            submitResultText.contains("wrong") -> return SubmitResult.WRONG_ANSWER
+            submitResultText.contains("presentation") -> return SubmitResult.PRESENTATION_ERROR
+            submitResultText.contains("runtime") -> return SubmitResult.RUNTIME_ERROR
+            submitResultText.contains("time") -> return SubmitResult.TIME_LIMIT_EXCEED
+            submitResultText.contains("memory") ->return SubmitResult.MEMORY_LIMIT_EXCEED
+            submitResultText.contains("compile") || submitResultText.contains("compilation error") -> return SubmitResult.COMPILE_ERROR
+            submitResultText.contains("wait")
+                    || submitResultText.contains("queuing")
+                    || submitResultText.contains("compiling")
+                    || submitResultText.contains("running")
+                    -> return SubmitResult.WAITING
+            submitResultText.contains("output") -> return SubmitResult.OUTPUT_LIMIT_EXCEED
+            else ->  return SubmitResult.UNKNOWN
         }
-        if (submitResult.toLowerCase().contains("wrong")) {
-            return SubmitResult.WRONG_ANSWER
-        }
-        if (submitResult.toLowerCase().contains("presentation")) {
-            return SubmitResult.PRESENTATION_ERROR
-        }
-        if (submitResult.toLowerCase().contains("runtime")) {
-            return SubmitResult.RUNTIME_ERROR
-        }
-        if (submitResult.toLowerCase().contains("time")) {
-            return SubmitResult.TIME_LIMIT_EXCEED
-        }
-        if (submitResult.toLowerCase().contains("memory")) {
-            return SubmitResult.MEMORY_LIMIT_EXCEED
-        }
-        if (submitResult.toLowerCase().contains("compile")
-            || submitResult.toLowerCase().contains("compilation error")
-        ) {
-            return SubmitResult.COMPILE_ERROR
-        }
-        if (submitResult.toLowerCase().contains("wait")
-            || submitResult.toLowerCase().contains("queuing")
-            || submitResult.toLowerCase().contains("compiling")
-            || submitResult.toLowerCase().contains("running")
-        ) {
-            return SubmitResult.WAITING
-        }
-        return if (submitResult.toLowerCase().contains("output")) {
-            SubmitResult.OUTPUT_LIMIT_EXCEED
-        } else SubmitResult.UNKNOWN
     }
 
-    abstract val supportLanguages: ArrayList<Language>
+    @OPTIONAL
     open fun getProblemStatus(problemStatus: String): ProblemStatus {
-        return if (problemStatus.contains("ac")) {
-            ProblemStatus.ACCEPTED
-        } else if (problemStatus.contains("wrong")) {
-            ProblemStatus.WRONG
-        } else {
-            ProblemStatus.NEVER_TRY
+        return when {
+            problemStatus.contains("ac") -> ProblemStatus.ACCEPTED
+            problemStatus.contains("wrong") -> ProblemStatus.WRONG
+            else -> ProblemStatus.NEVER_TRY
         }
     }
 
-    open fun getLanguage(language: String?): Language? {
-        for (lang in supportLanguages) {
-            if (lang.language_name == language) return lang
+    @AUTO_USE
+    open fun getLanguage(languageName: String?): Language? {
+        for (language in supportLanguages) {
+            if (language.language_name == languageName) return language
         }
         return null
     }
 
     /**
-     * @return 是否遇到SubmitError.
+     * @return 是否存在ActionError.
      */
-    open fun handleSubmitError(submitResponse: SubmitResponse?): Boolean {
-
-        // 如果该指令没有返回SubmitResponse, 则默认认为该次提交成功.
-        if (submitResponse == null) return false
-        if (submitResponse.isActionError()) {
-            Platform.runLater { DialogTools.errorDialog(submitResponse.actionError!!.errorMessage) }
+    @AUTO_USE
+    open fun handleActionError(actionBean: ActionBean): Boolean {
+        if (actionBean.isActionError()) {
+            Platform.runLater { DialogTools.errorDialog(actionBean.actionError!!.errorMessage) }
             return true
         }
         return false
@@ -195,16 +196,15 @@ abstract class ActionSet {
     /**
      * @return 副账号的提交是否通过.
      */
-    @AUTO
-    open fun two_step_submit(subaccountSubmitRequest: SubmitRequest): Boolean {
+    @AUTO_USE
+    open fun testTwoStepSubmit(subaccountSubmitRequest: SubmitRequest): Boolean {
         /** SubAccount -> Call: SubmitAction.  */
-        currentActionSet.submitAction!!.execute(subaccountSubmitRequest)
+        currentActionSet.submitAction.execute(subaccountSubmitRequest)
         /** SubAccount -> Call: TraceAction.  */
         val traceRequest = TraceRequest(subaccountSubmitRequest)
-        val traceResponse = currentActionSet.traceAction!!.execute(traceRequest)
+        val traceResponse = currentActionSet.traceAction.execute(traceRequest)
 
-        // 若TraceResponse为null, 则视为SubmitResponse失败.
-        return traceResponse != null &&
-                !traceResponse.isActionError()
+        /** Does SubAccount Get Accepted without Any Error ? **/
+        return !traceResponse.isActionError() && traceResponse.traceSubmitResponse != null && traceResponse.traceSubmitResponse!!.submitResult == SubmitResult.ACCEPTED
     }
 }

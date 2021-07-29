@@ -1,11 +1,10 @@
 package com.sakurawald.silicon.util
 
-import com.sakurawald.silicon.debug.LoggerManager
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 object DateUtil {
     /**
      * @return 返回本地当前时间的详细文本, 并且该文本是符合Windows文件命名规则的.
@@ -18,20 +17,19 @@ object DateUtil {
         }
 
     /**
-     * 将<某个时间>与<当前时间>比较
+     * 将某个时间与当前时间比较
      *
-     * @return 输入的日期在现在之后，则返回1. 输入的日期在现在之前，则返回-1. 若输入日期与现在一样，则返回0.
-    </当前时间></某个时间> */
+     * @return 输入的日期在现在之后，则返回1. 输入的日期在现在之前，则返回-1. 若输入日期与现在一样，则返回0.*/
     fun compareDate(date: Calendar): Int {
         return compareDate(date, Calendar.getInstance())
     }
 
     fun compareDate(date1: Calendar, date2: Calendar): Int {
-        val date_clone = date1.clone() as Calendar
-        val date2_clone = date2.clone() as Calendar
-        setZero(date_clone)
-        setZero(date2_clone)
-        return date_clone.compareTo(date2_clone)
+        val data1Clone = date1.clone() as Calendar
+        val data2Clone = date2.clone() as Calendar
+        setZero(data1Clone)
+        setZero(data2Clone)
+        return data1Clone.compareTo(data2Clone)
     }
 
     /**
@@ -46,8 +44,7 @@ object DateUtil {
     }
 
     /**
-     * @return 计算<两个日期>相差多少分钟.
-    </两个日期> */
+     * @return 计算两个日期相差多少分钟.*/
     fun diffMinutes(big: Calendar, small: Calendar): Long {
         val nm = (1000 * 60).toLong() // 每分钟毫秒数
         val diff = big.time.time - small.time.time // 获得两个时间的毫秒时间差异
@@ -61,32 +58,6 @@ object DateUtil {
         val nm: Long = 1000
         val diff = big.time.time - small.time.time // 获得两个时间的毫秒时间差异
         return diff / nm
-    }
-
-    fun getDataDetail(date: String?): Calendar {
-        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        var d: Date? = null
-        try {
-            d = format.parse(date)
-        } catch (e: ParseException) {
-            LoggerManager.reportException(e)
-        }
-        val c = Calendar.getInstance()
-        c.time = d
-        return c
-    }
-
-    fun getDataSimple(date: String?): Calendar {
-        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-        var d: Date? = null
-        try {
-            d = format.parse(date)
-        } catch (e: ParseException) {
-            LoggerManager.reportException(e)
-        }
-        val c = Calendar.getInstance()
-        c.time = d
-        return c
     }
 
     fun getDateDetail(c: Calendar): String {
@@ -129,14 +100,14 @@ object DateUtil {
         return c
     }
 
-    fun translate_Date_To_Calendar(date: Date?): Calendar {
+    fun translateDateToCalendar(date: Date?): Calendar {
         val cal = Calendar.getInstance()
         cal.time = date
         return cal
     }
 
-    fun translate_TimeStamp_Ms_To_Calendar(timestamp_Ms: Long): Calendar {
-        return translate_Date_To_Calendar(translate_TimeStamp_Ms_To_Date(timestamp_Ms))
+    fun translateTimeStampMsToCalendar(timestamp_Ms: Long): Calendar {
+        return translateDateToCalendar(translate_TimeStamp_Ms_To_Date(timestamp_Ms))
     }
 
     fun translate_TimeStamp_Ms_To_Date(timestamp_Ms: Long): Date {

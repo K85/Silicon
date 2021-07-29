@@ -19,7 +19,7 @@ class AccountsConfig_Data {
         inner class SubAccount {
             var userID: String? = null
             var password: String? = null
-            var two_step_submit = false
+            var twoStepSubmit = false
         }
     }
 }

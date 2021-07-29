@@ -50,7 +50,9 @@ class SourceDetailController : WebViewController() {
                 val sourceDetailResponse = currentActionSet.sourceDetailAction!!.execute(sourceDetailRequest)
 
                 // Update Webview.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(sourceDetailResponse!!.hTML)
+                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                    sourceDetailResponse.HTML
+                )
             }
         }
     }

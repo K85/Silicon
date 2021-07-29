@@ -19,6 +19,7 @@ class CodeEditorController : WebViewController() {
     }
 
     companion object {
+        @JvmStatic
         fun showCodeEditor() {
             /** Open Window: CodeEditor.  */
             val loader = FXMLLoader(App::class.java.getResource("CodeEditor.fxml"))

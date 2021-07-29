@@ -16,42 +16,23 @@ import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate", "LocalVariableName", "unused", "DuplicatedCode", "FunctionName")
 object PluginUtil {
-    val encodeTable = arrayOfNulls<String>(256)
+    private val encodeTable = arrayOfNulls<String>(256)
     fun fastSetRAS(RAS_Text: String, targetProblem: Problem) {
         val AC = HttpUtil.betweenString(RAS_Text, "(", "/").toInt()
         val submit = HttpUtil.betweenString(RAS_Text, "/", ")").toInt()
         val ratio = AC.toDouble() / submit
-        targetProblem.aC = AC
+        targetProblem.AC = AC
         targetProblem.submit = submit
         targetProblem.ratio = ratio
     }
 
+    @JvmOverloads
     fun fastGetSubmitResponseList(
         HTML: String?,
         statusTableSelector: String?,
-        tablecolumn_index_runID: Int,
-        tablecolumn_index_userID: Int,
-        tablecolumn_index_problemID: Int,
-        tablecolumn_index_result: Int,
-        tablecolumn_index_memory: Int,
-        tablecolumn_index_time: Int,
-        tablecolumn_index_language: Int,
-        tablecolumn_index_codeLength: Int,
-        tablecolumn_index_submitTime: Int
-    ): ArrayList<SubmitResponse> {
-        return fastGetSubmitResponseList(
-            HTML, statusTableSelector, 1, tablecolumn_index_runID,
-            tablecolumn_index_userID, tablecolumn_index_problemID, tablecolumn_index_result,
-            tablecolumn_index_memory, tablecolumn_index_time, tablecolumn_index_language, tablecolumn_index_codeLength,
-            tablecolumn_index_submitTime
-        )
-    }
-
-    fun fastGetSubmitResponseList(
-        HTML: String?,
-        statusTableSelector: String?,
-        skipColumns: Int,
+        skipRows: Int = 1,
         tablecolumn_index_runID: Int,
         tablecolumn_index_userID: Int,
         tablecolumn_index_problemID: Int,
@@ -66,83 +47,66 @@ object PluginUtil {
         val doc: Document = Jsoup.parse(HTML)
         val elements: Elements = doc.select(statusTableSelector)
         /** Status.  */
-        elements.stream().skip(skipColumns.toLong()).forEach { element ->
-            val submitResponse = SubmitResponse()
+        elements.stream().skip(skipRows.toLong()).forEach { element ->
+            var runID: String? = null
+            var userID: String? = null
+            var problemID: String? = null
+            var result: SubmitResult? = null
+            var memory: String? = null
+            var time: String? = null
+            var language: String? = null
+            var codeLength: String? = null
+            var submitTime: String? = null
+
             if (tablecolumn_index_runID != -1) {
-                val runID: String = element.child(tablecolumn_index_runID).text()
-                submitResponse.runID = runID
+                runID = element.child(tablecolumn_index_runID).text()
             }
             if (tablecolumn_index_userID != -1) {
-                val userID: String = element.child(tablecolumn_index_userID).text()
-                // Sync SubmitResponse.Account with userID.
-                submitResponse.submitAccount = Account(userID, null)
+                userID = element.child(tablecolumn_index_userID).text()
             }
             if (tablecolumn_index_problemID != -1) {
-                val problemID: String = element.child(tablecolumn_index_problemID).text()
-                submitResponse.problemID = problemID
+                problemID = element.child(tablecolumn_index_problemID).text()
             }
             if (tablecolumn_index_result != -1) {
-                val result: SubmitResult =
-                    Silicon.currentActionSet.getSubmitResult(element.child(tablecolumn_index_result).text())
-                submitResponse.submitResult = result
+                result = Silicon.currentActionSet.getSubmitResult(element.child(tablecolumn_index_result).text())
             }
             if (tablecolumn_index_memory != -1) {
-                val memory: String = element.child(tablecolumn_index_memory).text()
-                submitResponse.memory = memory
+                memory = element.child(tablecolumn_index_memory).text()
             }
             if (tablecolumn_index_time != -1) {
-                val time: String = element.child(tablecolumn_index_time).text()
-                submitResponse.time = time
+                time = element.child(tablecolumn_index_time).text()
             }
             if (tablecolumn_index_language != -1) {
-                val language: String = element.child(tablecolumn_index_language).text()
-                submitResponse.language = language
+                language = element.child(tablecolumn_index_language).text()
             }
             if (tablecolumn_index_codeLength != -1) {
-                val codeLength: String = element.child(tablecolumn_index_codeLength).text()
-                submitResponse.codeLength = codeLength
+                codeLength = element.child(tablecolumn_index_codeLength).text()
             }
             if (tablecolumn_index_submitTime != -1) {
-                val submitTime: String = element.child(tablecolumn_index_submitTime).text()
-                submitResponse.submitTime = submitTime
+                submitTime = element.child(tablecolumn_index_submitTime).text()
             }
+
+            val submitResponse = SubmitResponse(
+                runID!!,
+                Account(userID, null),
+                problemID!!,
+                language!!,
+                memory,
+                time,
+                codeLength,
+                submitTime,
+                result!!
+            )
             submitResponseList.add(submitResponse)
         }
         return submitResponseList
     }
 
+    @JvmOverloads
     fun fastGetProblemList(
         HTML: String?,
         problemListTableSelector: String?,
-        td_amount_withProblemStatus: Int,
-        tablecolumn_index_problemstatus_withProblemStatus: Int,
-        tablecolumn_index_problemID_withoutProblemStatus: Int,
-        tablecolumn_index_problemTitle_withoutProblemStatus: Int,
-        tablecolumn_index_RAS_Text_withoutProblemStatus: Int,
-        tablecolumn_index_ProblemDifficulty_withoutProblemStatus: Int,
-        tablecolumn_index_ProblemDate_withoutProblemStatus: Int
-    ): ArrayList<Problem> {
-        return fastGetProblemList(
-            HTML,
-            problemListTableSelector,
-            1,
-            td_amount_withProblemStatus,
-            tablecolumn_index_problemstatus_withProblemStatus,
-            tablecolumn_index_problemID_withoutProblemStatus,
-            tablecolumn_index_problemTitle_withoutProblemStatus,
-            tablecolumn_index_RAS_Text_withoutProblemStatus,
-            tablecolumn_index_ProblemDifficulty_withoutProblemStatus,
-            tablecolumn_index_ProblemDate_withoutProblemStatus
-        )
-    }
-
-    /**
-     * 我知道这是个很糟糕的写法, 但是有效.
-     */
-    fun fastGetProblemList(
-        HTML: String?,
-        problemListTableSelector: String?,
-        skipColumns: Int,
+        skipRows: Int = 1,
         td_amount_withProblemStatus: Int,
         tablecolumn_index_problemstatus_withProblemStatus: Int,
         tablecolumn_index_problemID_withoutProblemStatus: Int,
@@ -152,13 +116,13 @@ object PluginUtil {
         tablecolumn_index_ProblemDate_withoutProblemStatus: Int
     ): ArrayList<Problem> {
         val problemList: ArrayList<Problem> = ArrayList<Problem>()
+
         /** HTML Analyse.  */
-        val doc: Document
-        doc = Jsoup.parse(HTML)
+        val doc: Document = Jsoup.parse(HTML)
         val problemListTable: Elements = doc.select(problemListTableSelector)
 
         // Skip TableHeader.
-        problemListTable.stream().skip(skipColumns.toLong()).forEach { e ->
+        problemListTable.stream().skip(skipRows.toLong()).forEach { e ->
 
             // Construct Problem.
             val problem = Problem()
@@ -179,6 +143,7 @@ object PluginUtil {
                 val problemID: String = e.child(tablecolumn_index_problemID_withoutProblemStatus).text()
                 problem.problemID = problemID
             }
+
             if (tablecolumn_index_problemTitle_withoutProblemStatus != -1) {
                 val problemTitle: String = e.child(tablecolumn_index_problemTitle_withoutProblemStatus).text()
                 problem.problemTitle = problemTitle
@@ -190,7 +155,7 @@ object PluginUtil {
             if (tablecolumn_index_ProblemDifficulty_withoutProblemStatus != -1) {
                 val problemDifficulty: Double =
                     transPercentage(e.child(tablecolumn_index_ProblemDifficulty_withoutProblemStatus).text())
-                problem.difficulty  = problemDifficulty
+                problem.difficulty = problemDifficulty
             }
             if (tablecolumn_index_ProblemDate_withoutProblemStatus != -1) {
                 val problemDate: String = e.child(tablecolumn_index_ProblemDate_withoutProblemStatus).text()
@@ -202,7 +167,7 @@ object PluginUtil {
         return problemList
     }
 
-    fun fastEncodeURL(URL: String): String {
+    fun fastEncodeURL_V3(URL: String): String {
         val sb = StringBuilder()
         for (element in URL) {
             sb.append(encodeTable[element.toInt() and 0xFF])
@@ -210,6 +175,9 @@ object PluginUtil {
         return sb.toString()
     }
 
+    /**
+     * 其他编程语言通用的URLEncode标准.
+     */
     fun fastEncodeURL_V2(URL: String, charset: String): String {
         return URLEncoder.encode(URL, charset)
             .replace("+", "%20")
@@ -220,14 +188,23 @@ object PluginUtil {
             .replace("%7E", "~")
     }
 
-    fun fastEncodeHTML(rawHTML: String?, enc: String?): String? {
+    /**
+     * Java语言的URLEncode标准
+     */
+    fun fastEncodeURL(rawHTML: String?, enc: String?): String? {
         return HttpUtil.encodeURL(rawHTML, enc)
     }
 
-    fun fastDecodeHTML(rawHTML: String?, enc: String?): String? {
+    /**
+     * @see fastEncodeURL
+     */
+    fun fastDecodeURL(rawHTML: String?, enc: String?): String? {
         return HttpUtil.decodeURL(rawHTML, enc)
     }
 
+    /**
+     * HTML编码转换.
+     */
     fun fastRecodeHTML(rawHTML: String, fromCharset: String?, toCharset: String?): String {
         try {
             return String(rawHTML.toByteArray(charset(fromCharset!!)), charset(toCharset!!))
@@ -238,7 +215,7 @@ object PluginUtil {
     }
 
     init {
-        /** Init encodeTable.  */
+        /** Init EncodeTable.  */
         for (i in 0..255) {
             if (i >= '0'.toInt() && i <= '9'.toInt() || i >= 'a'.toInt() && i <= 'z'.toInt() || i >= 'A'.toInt() && i <= 'Z'.toInt() || i == '-'.toInt() || i == '_'.toInt() || i == '.'.toInt() || i == '!'.toInt() || i == '*'.toInt() || i == '('.toInt() || i == ')'.toInt()) {
                 encodeTable[i] = ""

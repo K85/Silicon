@@ -1,6 +1,6 @@
 package com.sakurawald.silicon.data.beans
 
-import com.sakurawald.silicon.ui.controller.*
+import com.sakurawald.silicon.ui.controller.Controller
 import javafx.fxml.FXMLLoader
 import javafx.stage.Stage
 
@@ -11,10 +11,6 @@ class JavaFXInstance<T : Controller?> {
         private set
     var controller: T? = null
         private set
-
-    constructor() {
-        // Do nothing.
-    }
 
     val isEmpty: Boolean
         get() = loader == null && stage == null && controller == null
@@ -31,9 +27,4 @@ class JavaFXInstance<T : Controller?> {
         controller = null
     }
 
-    constructor(loader: FXMLLoader?, stage: Stage?, controller: T) {
-        this.loader = loader
-        this.stage = stage
-        this.controller = controller
-    }
 }

@@ -17,6 +17,7 @@ import java.io.IOException
 class ProblemDetailController : WebViewController() {
 
     companion object {
+        @JvmStatic
         fun showProblemDetailWindow(problem: Problem) {
             /** Support: ProblemDetailAction ?  */
             if (!currentActionSet.supportThisAction(currentActionSet.problemDetailAction)) {
@@ -24,11 +25,11 @@ class ProblemDetailController : WebViewController() {
                 return
             }
             /** Open Window: ProblemDetail.  */
-            var loader = FXMLLoader(App::class.java.getResource("ProblemDetail.fxml"))
-            var stage = Stage()
+            val loader = FXMLLoader(App::class.java.getResource("ProblemDetail.fxml"))
+            val stage = Stage()
             try {
-                var root = loader.load<Parent>()
-                var scene = Scene(root)
+                val root = loader.load<Parent>()
+                val scene = Scene(root)
                 WindowTools.setWindowIcon(stage)
                 stage.title = "Problem Detail: " + problem.problemID
                 stage.scene = scene
@@ -46,10 +47,13 @@ class ProblemDetailController : WebViewController() {
             Platform.runLater {
 
                 // Request ProblemDetail.
-                var problemDetailResponse = currentActionSet.problemDetailAction!!.execute(ProblemDetailRequest(problem))
+                val problemDetailResponse =
+                    currentActionSet.problemDetailAction!!.execute(ProblemDetailRequest(problem))
 
                 // Update WebView.
-                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(problemDetailResponse!!.hTML)
+                (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                    problemDetailResponse.HTML
+                )
             }
         }
     }

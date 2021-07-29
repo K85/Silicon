@@ -1,22 +1,21 @@
 package com.sakurawald.silicon.debug
 
-import com.sakurawald.silicon.file.*
+import com.sakurawald.silicon.file.FileManager
 import com.sakurawald.silicon.util.JavaFxUtil.DialogTools
 import javafx.application.Platform
-import javafx.scene.control.*
+import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.Label
+import javafx.scene.control.TextArea
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 import org.apache.logging.log4j.LogManager
-import java.io.*
+import org.apache.logging.log4j.Logger
+import java.io.StringWriter
 
 object LoggerManager {
-    const val SAD_FACIAL_EXPRESSION = "(ó﹏ò｡)"
-
-    /**
-     * 本地磁盘记录器对象.
-     */
-    val logger = LogManager.getLogger(
+    private const val SAD_FACIAL_EXPRESSION = "(ó﹏ò｡)"
+    private val diskLogger: Logger = LogManager.getLogger(
         LoggerManager::class.java
     )
 
@@ -28,21 +27,17 @@ object LoggerManager {
     @JvmOverloads
     fun logDebug(content: String?, forceLog: Boolean = false) {
         if (forceLog) {
-            logger.debug(content)
+            diskLogger.debug(content)
             return
         }
 
         // 如果不存在ApplicationConfig.json文件, 则默认开启Debug模式
-        if (FileManager.Companion.applicationConfig_File == null ||
-            !FileManager.Companion.applicationConfig_File!!.isHasInit ||
-            FileManager.Companion.applicationConfig_File!!.specificDataInstance!!.debug.debug
+        if (FileManager.applicationConfig_File == null ||
+            !FileManager.applicationConfig_File!!.initialized ||
+            FileManager.applicationConfig_File!!.getConfigDataClassInstance().debug.debug
         ) {
-            logger.debug(content)
+            diskLogger.debug(content)
         }
-    }
-
-    fun logError(e: Exception) {
-        logger.error(getExceptionInfo(e))
     }
 
     /**
@@ -51,13 +46,13 @@ object LoggerManager {
     fun reportException(e: Exception) {
 
         // 输出到<本地存储>
-        logger.error(getExceptionInfo(e))
+        diskLogger.error(getExceptionInfo(e))
 
         // Show Dialog
         showErrorDialog(e)
     }
 
-    fun getExceptionInfo(e: Exception): String {
+    private fun getExceptionInfo(e: Exception): String {
 
         // 添加Exception基础信息
         return """
@@ -69,7 +64,7 @@ object LoggerManager {
                """.trimIndent()
     }
 
-    fun getExceptionStack(e: Exception): String {
+    private fun getExceptionStack(e: Exception): String {
         val result = StringBuilder()
         for (s in e.stackTrace) {
             result.append("\tat ").append(s).append("\r\n")
@@ -77,7 +72,7 @@ object LoggerManager {
         return result.toString()
     }
 
-    fun showErrorDialog(e: Exception) {
+    private fun showErrorDialog(e: Exception) {
         Platform.runLater {
             val alert = Alert(AlertType.ERROR)
             DialogTools.setIcon(alert)
@@ -94,7 +89,6 @@ object LoggerManager {
 
             // Create expandable Exception.
             val sw = StringWriter()
-            val pw = PrintWriter(sw)
             val exceptionText = sw.toString()
             val label = Label("错误栈追踪：")
             val textArea = TextArea(exceptionText)

@@ -6,12 +6,11 @@ import java.util.*
 
 class AccountsConfig_File(
     path: String?, fineName: String?,
-    configDataClass: Class<*>?
-) : ConfigFile(path, fineName, configDataClass) {
-    val specificDataInstance: AccountsConfig_Data?
-        get() = super.getConfigDataClassInstance() as AccountsConfig_Data
-    val accountConfigs: ArrayList<AccountConfig>
-        get() = FileManager.Companion.accountsConfig_file!!.specificDataInstance!!.accountArrayList
+    configDataClass: Class<AccountsConfig_Data>?
+) : ConfigFile<AccountsConfig_Data>(path, fineName, configDataClass) {
+
+    private val accountConfigs: ArrayList<AccountConfig>
+        get() = FileManager.accountsConfig_file!!.getConfigDataClassInstance().accountArrayList
 
     /** Create AccountConfig IF not exist.  */
     val currentAccountConfig: AccountConfig
@@ -21,13 +20,13 @@ class AccountsConfig_File(
             if (currentAccountConfig == null) {
                 currentAccountConfig = AccountConfig()
                 currentAccountConfig.actionSet = currentActionSet.actionSetName
-                FileManager.Companion.accountsConfig_file!!.accountConfigs.add(currentAccountConfig)
+                FileManager.accountsConfig_file!!.accountConfigs.add(currentAccountConfig)
             }
             return currentAccountConfig
         }
 
     fun getAccountConfig(actionSetName: String?): AccountConfig? {
-        for (accountConfig in FileManager.Companion.accountsConfig_file!!.specificDataInstance!!.accountArrayList) {
+        for (accountConfig in FileManager.accountsConfig_file!!.getConfigDataClassInstance().accountArrayList) {
             if (actionSetName == accountConfig.actionSet) {
                 return accountConfig
             }

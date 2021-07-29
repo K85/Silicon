@@ -6,23 +6,32 @@ import com.sakurawald.silicon.debug.LoggerManager
 import com.sakurawald.silicon.debug.LoggerManager.logDebug
 import okhttp3.Response
 
-abstract class LoginAction : Action<LoginRequest?, LoginResponse?>() {
-    abstract fun execute(loginRequest: LoginRequest): LoginResponse?
-    fun getLoginMessage(response: Response): String {
-        return response.code.toString() + " " + response.message
-    }
+abstract class LoginAction : Action<LoginRequest, LoginResponse>() {
+    abstract override fun execute(requestBean: LoginRequest): LoginResponse
 
-    fun getLoginToken(response: Response, cookie_name: String): String? {
-        /** Analyse Cookies.  */
-        val set_cookie = response.headers("set-cookie").toString()
-        logDebug("Login Action: set-cookie = $set_cookie")
-        val offset = cookie_name.length + 1
-        var token: String? = null
-        try {
-            token = set_cookie.substring(set_cookie.indexOf("$cookie_name=") + offset, set_cookie.indexOf(";"))
-        } catch (e: StringIndexOutOfBoundsException) {
-            LoggerManager.logError(e)
+    companion object {
+        @JvmStatic
+        fun getLoginMessage(response: Response): String {
+            return response.code.toString() + " " + response.message
         }
-        return token
+
+        /**
+         * 根据HTTP请求中Headers中的set-cookie参数获取cookie.
+         */
+        @JvmStatic
+        fun getLoginToken(response: Response, cookie_name: String): String? {
+            /** Analyse Cookies.  */
+            val setCookie = response.headers("set-cookie").toString()
+
+            logDebug("Login Action: set-cookie = $setCookie")
+            val offset = cookie_name.length + 1
+            var token: String? = null
+            try {
+                token = setCookie.substring(setCookie.indexOf("$cookie_name=") + offset, setCookie.indexOf(";"))
+            } catch (e: StringIndexOutOfBoundsException) {
+                LoggerManager.reportException(e)
+            }
+            return token
+        }
     }
 }

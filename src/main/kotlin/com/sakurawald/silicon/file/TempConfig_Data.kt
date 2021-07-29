@@ -1,5 +1,6 @@
 package com.sakurawald.silicon.file
 
+@Suppress("unused")
 class TempConfig_Data {
     var siliconTempMemory = SiliconTempMemory()
 

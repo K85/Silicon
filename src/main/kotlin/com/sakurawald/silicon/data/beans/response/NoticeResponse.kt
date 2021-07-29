@@ -1,3 +1,5 @@
 package com.sakurawald.silicon.data.beans.response
 
-class NoticeResponse private constructor() : ResponseBean()
+/**
+ * NoticeResponse的空对象, 仅作返回使用. */
+object NoticeResponse : ResponseBean()
