@@ -3,6 +3,7 @@ package com.sakurawald.silicon.ui.controller
 import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.Silicon.mainAccount
 import com.sakurawald.silicon.data.beans.request.CompileDetailRequest
+import com.sakurawald.silicon.data.beans.response.CompileDetailResponse
 import com.sakurawald.silicon.data.beans.response.SubmitResponse
 import com.sakurawald.silicon.debug.LoggerManager
 import com.sakurawald.silicon.ui.App
@@ -44,23 +45,25 @@ class CompileDetailController : WebViewController() {
 
             // Show Window.
             stage.show()
-            /** Update Source Detail  */
-            Platform.runLater {
-                // Request.
+
+            // Request.
+            Thread {
                 val compileDetailRequest = CompileDetailRequest(mainAccount, submitResponse.runID)
-
+                var compileDetailResponse: CompileDetailResponse? = null
                 try {
-                    val compileDetailResponse = currentActionSet.compileDetailAction!!.execute(compileDetailRequest)
-
-                    // Update Webview.
-                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
-                        compileDetailResponse!!.HTML
-                    )
+                    compileDetailResponse = currentActionSet.compileDetailAction!!.execute(compileDetailRequest)
                 } catch (e: Exception) {
                     LoggerManager.reportException(e)
                 }
 
-            }
+                /** Update Source Detail  */
+                Platform.runLater {
+                    // Update Webview.
+                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                        compileDetailResponse!!.HTML
+                    )
+                }
+            }.start()
         }
     }
 

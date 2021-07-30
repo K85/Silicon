@@ -34,16 +34,22 @@ abstract class ActionSet {
     abstract val problemsAction: ProblemsAction?
     abstract val problemDetailAction: ProblemDetailAction?
     abstract val sourceDetailAction: SourceDetailAction?
-    open val noticeAction: NoticeAction?
-        get() = NoticeAction()
+    open val noticeAction: NoticeAction? = null
+        get() {
+            if (field == null) return NoticeAction()
+            return field
+        }
     abstract val compileDetailAction: CompileDetailAction?
 
     @NECESSARY
-    open val traceAction: TraceAction
-        get() = TraceAction()
+    open val traceAction: TraceAction? = null
+        get() {
+            if (field == null) return TraceAction()
+            return field
+        }
     abstract val baseURL: String
     abstract val actionSetName: String
-    val codeEditorURL: String
+    open val codeEditorURL: String
         get() = "http://clioude.space/"
 
     abstract val supportLanguages: ArrayList<Language>
@@ -204,7 +210,7 @@ abstract class ActionSet {
         currentActionSet.submitAction.execute(subaccountSubmitRequest)
         /** SubAccount -> Call: TraceAction.  */
         val traceRequest = TraceRequest(subaccountSubmitRequest)
-        val traceResponse = currentActionSet.traceAction.execute(traceRequest)
+        val traceResponse = currentActionSet.traceAction!!.execute(traceRequest)
 
         /** Does SubAccount Get Accepted without Any Error ? **/
         return !traceResponse.isActionError() && traceResponse.traceSubmitResponse != null && traceResponse.traceSubmitResponse!!.submitResult == SubmitResult.ACCEPTED

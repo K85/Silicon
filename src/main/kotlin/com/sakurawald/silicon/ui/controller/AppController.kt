@@ -331,7 +331,7 @@ class AppController : Controller() {
             }
             /** MainAccount -> Call: TraceAction.  */
             if (currentActionSet.supportThisAction(currentActionSet.traceAction)) {
-                currentActionSet.traceAction.execute(TraceRequest(submitRequest))
+                currentActionSet.traceAction!!.execute(TraceRequest(submitRequest))
             } else {
                 hideSubmitProgressBar()
             }

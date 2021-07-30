@@ -1,6 +1,7 @@
 package com.sakurawald.silicon.util
 
 import com.sakurawald.silicon.Silicon
+import com.sakurawald.silicon.ui.App
 import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.control.ButtonType
@@ -93,6 +94,7 @@ class JavaFxUtil {
         @JvmStatic
         fun alert(alertType: AlertType?, contentText: String?, vararg buttonTypes: ButtonType?): Alert {
             val a = Alert(alertType, contentText, *buttonTypes)
+            a.initOwner(App.appInstance.stage)
             setIcon(a)
             return a
         }

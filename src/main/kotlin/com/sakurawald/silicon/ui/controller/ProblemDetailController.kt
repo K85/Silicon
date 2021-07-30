@@ -3,6 +3,7 @@ package com.sakurawald.silicon.ui.controller
 import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.data.beans.Problem
 import com.sakurawald.silicon.data.beans.request.ProblemDetailRequest
+import com.sakurawald.silicon.data.beans.response.ProblemDetailResponse
 import com.sakurawald.silicon.debug.LoggerManager
 import com.sakurawald.silicon.ui.App
 import com.sakurawald.silicon.util.JavaFxUtil.DialogTools
@@ -43,23 +44,26 @@ class ProblemDetailController : WebViewController() {
 
             // Show Window.
             stage.show()
-            /** Update Problem Detail.  */
-            Platform.runLater {
 
+            // Request ProblemDetail.
+            Thread {
+                var problemDetailResponse: ProblemDetailResponse? = null
                 try {
-                    // Request ProblemDetail.
-                    val problemDetailResponse =
+                    problemDetailResponse =
                         currentActionSet.problemDetailAction!!.execute(ProblemDetailRequest(problem))
-
-                    // Update WebView.
-                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
-                        problemDetailResponse.HTML
-                    )
                 } catch (e: Exception) {
                     LoggerManager.reportException(e)
                 }
 
-            }
+                /** Update Problem Detail.  */
+                Platform.runLater {
+                    // Update WebView.
+                    (loader.getController<Any>() as WebViewController).webview_core!!.engine.loadContent(
+                        problemDetailResponse!!.HTML
+                    )
+                }
+            }.start()
+
         }
     }
 
