@@ -1,6 +1,5 @@
 package com.sakurawald.silicon.data.beans.request
 
-import com.sakurawald.silicon.annotation.AUTO_USE
 import com.sakurawald.silicon.annotation.NECESSARY
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
@@ -17,13 +16,13 @@ open class NoticeRequest : RequestBean {
     var isAutoUpdate = false
         private set
 
-    @AUTO_USE
+    @NECESSARY
     constructor(notice_label: Label, autoUpdate: Boolean) {
         this.noticeLabel = notice_label
         isAutoUpdate = autoUpdate
     }
 
-    @AUTO_USE
+    @NECESSARY
     constructor(notice_label: Label, notice_mouse_event: MouseEvent?) {
         this.noticeLabel = notice_label
         this.noticeMouseEvent = notice_mouse_event

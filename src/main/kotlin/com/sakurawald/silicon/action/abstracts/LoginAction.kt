@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.sakurawald.silicon.action.abstracts
 
 import com.sakurawald.silicon.data.beans.request.LoginRequest

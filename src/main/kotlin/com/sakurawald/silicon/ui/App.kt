@@ -33,7 +33,7 @@ class App : Application() {
         appStage.title = "Silicon"
         appStage.scene = Scene(root)
         appStage.isResizable = false
-
+        appStage.scene.stylesheets.add("bootstrapfx.css");
         // Show Window.
         appStage.show()
 

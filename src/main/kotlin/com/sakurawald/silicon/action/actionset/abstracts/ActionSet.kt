@@ -4,7 +4,6 @@ import com.sakurawald.silicon.Silicon.currentActionSet
 import com.sakurawald.silicon.Silicon.mainAccount
 import com.sakurawald.silicon.Silicon.subAccount
 import com.sakurawald.silicon.action.abstracts.*
-import com.sakurawald.silicon.annotation.AUTO_USE
 import com.sakurawald.silicon.annotation.NECESSARY
 import com.sakurawald.silicon.annotation.OPTIONAL
 import com.sakurawald.silicon.data.beans.*
@@ -84,12 +83,12 @@ abstract class ActionSet {
         return actionSetName
     }
 
-    @AUTO_USE
+    @NECESSARY
     fun supportThisAction(action: Action<*, *>?): Boolean {
         return action != null
     }
 
-    @AUTO_USE
+    @NECESSARY
     open fun cloneAccount() {
         App.settingsInstance.controller!!.progressbar_clone_account!!.progress = ProgressBar.INDETERMINATE_PROGRESS
         App.settingsInstance.controller!!.button_clone_account!!.isDisable = true
@@ -181,7 +180,7 @@ abstract class ActionSet {
         }
     }
 
-    @AUTO_USE
+    @NECESSARY
     open fun getLanguage(languageName: String?): Language? {
         for (language in supportLanguages) {
             if (language.language_name == languageName) return language
@@ -192,7 +191,7 @@ abstract class ActionSet {
     /**
      * @return 是否存在ActionError.
      */
-    @AUTO_USE
+    @NECESSARY
     open fun handleActionError(actionBean: ActionBean): Boolean {
         if (actionBean.isActionError()) {
             Platform.runLater { DialogTools.errorDialog(actionBean.actionError!!.errorMessage) }
@@ -204,7 +203,7 @@ abstract class ActionSet {
     /**
      * @return 副账号的提交是否通过.
      */
-    @AUTO_USE
+    @NECESSARY
     open fun testTwoStepSubmit(subaccountSubmitRequest: SubmitRequest): Boolean {
         /** SubAccount -> Call: SubmitAction.  */
         currentActionSet.submitAction.execute(subaccountSubmitRequest)

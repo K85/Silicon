@@ -1,7 +1,7 @@
 package com.sakurawald.silicon.action.abstracts
 
 import com.sakurawald.silicon.Silicon.currentActionSet
-import com.sakurawald.silicon.annotation.AUTO_USE
+import com.sakurawald.silicon.annotation.NECESSARY
 import com.sakurawald.silicon.data.beans.Page
 import com.sakurawald.silicon.data.beans.SubmitResult
 import com.sakurawald.silicon.data.beans.request.StatusRequest
@@ -21,7 +21,7 @@ open class TraceAction : Action<TraceRequest, TraceResponse>() {
         val traceSubmitRequest = requestBean.submitRequest
 
         /** Control ProgressBar.  */
-        App.appInstance.controller!!.showSubmitProgressBar()
+        App.appInstance.controller?.showSubmitProgressBar()
         while (true) {
             /** Wait Remote Server.  */
             try {
@@ -71,7 +71,7 @@ open class TraceAction : Action<TraceRequest, TraceResponse>() {
         }
     }
 
-    @AUTO_USE
+    @NECESSARY
     fun handleRelevantSubmitResponse(relevantSubmitResponse: SubmitResponse) {
         when (relevantSubmitResponse.submitResult) {
             SubmitResult.ACCEPTED -> DialogTools.noneDialog(relevantSubmitResponse.formatedString)

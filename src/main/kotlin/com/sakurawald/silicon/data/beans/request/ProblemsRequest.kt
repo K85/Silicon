@@ -1,6 +1,6 @@
 package com.sakurawald.silicon.data.beans.request
 
-import com.sakurawald.silicon.annotation.AUTO_USE
+import com.sakurawald.silicon.annotation.NECESSARY
 import com.sakurawald.silicon.annotation.OPTIONAL
 import com.sakurawald.silicon.data.beans.Account
 
@@ -13,7 +13,7 @@ open class ProblemsRequest(var requestAccount: Account?, var page: String?) : Re
     @OPTIONAL
     var problemSearchKey: String? = null
 
-    @AUTO_USE
+    @NECESSARY
     constructor(account: Account?, page: String?, problemSearchKey: String?) : this(account, page) {
         this.problemSearchKey = problemSearchKey
     }

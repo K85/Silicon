@@ -1,7 +1,7 @@
 package com.sakurawald.silicon.action.abstracts
 
 import com.sakurawald.silicon.Silicon.currentActionSet
-import com.sakurawald.silicon.annotation.AUTO_USE
+import com.sakurawald.silicon.annotation.NECESSARY
 import com.sakurawald.silicon.data.beans.Account
 import com.sakurawald.silicon.data.beans.Page
 import com.sakurawald.silicon.data.beans.request.StatusRequest
@@ -13,10 +13,10 @@ import java.util.*
 abstract class StatusAction : Action<StatusRequest, StatusResponse>() {
     abstract override fun execute(requestBean: StatusRequest): StatusResponse
 
-    @AUTO_USE
+    @NECESSARY
     abstract fun supportStatusPageSkip(): Boolean
 
-    @AUTO_USE
+    @NECESSARY
     open fun getLatestSatisfiedSubmitResponse(
         submitResponseArrayList: ArrayList<SubmitResponse>,
         userID: String,
@@ -28,7 +28,7 @@ abstract class StatusAction : Action<StatusRequest, StatusResponse>() {
         return null
     }
 
-    @AUTO_USE
+    @NECESSARY
     open fun getAllHistoryStatus(account: Account): ArrayList<SubmitResponse?> {
         logDebug("getAllHistoryStatus >> Account = $account")
         val submitResponseArrayList = ArrayList<SubmitResponse?>()

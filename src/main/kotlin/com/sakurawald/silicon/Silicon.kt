@@ -32,23 +32,26 @@ object Silicon {
         /** Init Logger Path.  */
         val rootPath = FileUtil.javaRunPath
         System.setProperty("local_logger.base_path", rootPath)
+
         LoggerManager.logDebug("Start Application...", true)
         LoggerManager.logDebug("Init >> Start", true)
+
         /** Init FileSystem.  */
         try {
             FileManager.init()
-        } catch (e: IllegalAccessException) {
-            LoggerManager.reportException(e)
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             LoggerManager.reportException(e)
         }
+
         /** Load Plugins.  */
         LoggerManager.logDebug("Load Silicon Plugins", true)
         if (PluginManager.loadPlugins() == 0) {
             throw RuntimeException("No Plugin Found! (You Must Install At Least 1 Plugin.)")
         }
+
         LoggerManager.logDebug("Init >> End", true)
         LoggerManager.logDebug("JavaFX Application >> Launch", true)
+
         /** Launch JavaFX Application.  */
         Application.launch(App::class.java)
     }

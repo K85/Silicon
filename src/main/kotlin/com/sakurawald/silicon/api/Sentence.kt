@@ -1,7 +1,7 @@
 package com.sakurawald.silicon.api
 
 class Sentence(
-    var id: Int, var content: String?, var type: String?, var from: String?,
+    var id: Int?, var content: String?, var type: String?, var from: String?,
     var creator: String?, var createdAt: String?
 ) {
 
@@ -22,7 +22,7 @@ class Sentence(
          * @return Sentence的空对象.
          */
         val nullSentence: Sentence
-            get() = Sentence(0, null, null, null, null, null)
+            get() = Sentence(null, null, null, null, null, null)
     }
 
 }
